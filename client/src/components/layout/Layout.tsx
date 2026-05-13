@@ -1,0 +1,36 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { Sidebar } from './Sidebar';
+import { TopBar } from './TopBar';
+import { DashboardPage } from '../../pages/DashboardPage';
+
+export function Layout() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <Sidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <TopBar />
+        <main className="flex-1 overflow-y-auto p-6">
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="*" element={<DashboardPage />} />
+          </Routes>
+        </main>
+      </div>
+    </div>
+  );
+}
