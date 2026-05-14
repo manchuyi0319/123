@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { DashboardPage } from '../../pages/DashboardPage';
+import { ClassesPage } from '../../pages/ClassesPage';
+import { StudentsPage } from '../../pages/StudentsPage';
 
 export function Layout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -27,6 +29,8 @@ export function Layout() {
         <main className="flex-1 overflow-y-auto p-6">
           <Routes>
             <Route path="/" element={<DashboardPage />} />
+            <Route path="/classes" element={<ClassesPage />} />
+            <Route path="/students" element={<StudentsPage />} />
             <Route path="*" element={<DashboardPage />} />
           </Routes>
         </main>

@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 const navItems = [
   { to: '/', label: '仪表盘', icon: '📊' },
   { to: '/classes', label: '班级管理', icon: '🏫' },
+  { to: '/students', label: '学生管理', icon: '👨‍🎓' },
   { to: '/pets', label: '宠物图鉴', icon: '🐾' },
   { to: '/rankings', label: '排行榜', icon: '🏆' },
   { to: '/rules', label: '评价规则', icon: '📋' },

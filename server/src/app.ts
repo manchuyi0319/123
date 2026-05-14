@@ -3,6 +3,8 @@ import cors from 'cors';
 import { errorHandler } from './middleware/error-handler';
 import authRoutes from './routes/auth.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import classRoutes from './routes/class.routes';
+import studentRoutes from './routes/student.routes';
 
 const app = express();
 
@@ -15,6 +17,8 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/classes', classRoutes);
+app.use('/api/students', studentRoutes);
 
 app.use(errorHandler);
 
