@@ -18,7 +18,7 @@ export function PetsPage() {
   );
 
   const [showAdoptModal, setShowAdoptModal] = useState(false);
-  const [adoptPet, setAdoptPet] = useState<any>(null);
+  const [selectedPet, setSelectedPet] = useState<any>(null);
   const [adoptStudentId, setAdoptStudentId] = useState('');
   const [adoptNickname, setAdoptNickname] = useState('');
   const [adoptError, setAdoptError] = useState('');
@@ -35,7 +35,7 @@ export function PetsPage() {
   })).filter(g => g.pets.length > 0);
 
   const openAdopt = (pet: any) => {
-    setAdoptPet(pet);
+    setSelectedPet(pet);
     setAdoptStudentId('');
     setAdoptNickname('');
     setAdoptError('');
@@ -48,7 +48,7 @@ export function PetsPage() {
     try {
       await adoptPet({
         student_id: adoptStudentId,
-        pet_id: adoptPet.id,
+        pet_id: selectedPet.id,
         nickname: adoptNickname.trim() || undefined,
       });
       setShowAdoptModal(false);
@@ -103,13 +103,13 @@ export function PetsPage() {
       )}
 
       {/* 领养弹窗 */}
-      {showAdoptModal && adoptPet && (
+      {showAdoptModal && selectedPet && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAdoptModal(false)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="text-center mb-4">
-              <span className="text-5xl">{adoptPet.emoji}</span>
-              <h3 className="text-lg font-semibold mt-2">领养 {adoptPet.name}</h3>
-              <p className="text-sm text-gray-400">{RARITY_LABELS[adoptPet.rarity]} · 消耗 {ADOPT_COST[adoptPet.rarity]} 积分</p>
+              <span className="text-5xl">{selectedPet.emoji}</span>
+              <h3 className="text-lg font-semibold mt-2">领养 {selectedPet.name}</h3>
+              <p className="text-sm text-gray-400">{RARITY_LABELS[selectedPet.rarity]} · 消耗 {ADOPT_COST[selectedPet.rarity]} 积分</p>
             </div>
 
             {adoptError && <div className="mb-3 p-2.5 bg-red-50 text-red-600 rounded-lg text-sm">{adoptError}</div>}
