@@ -4,6 +4,8 @@ import { fetchClasses } from '../api/classes';
 import { fetchStudents, addStudent, batchAddStudents, updateStudent, deactivateStudent } from '../api/students';
 import { fetchRules } from '../api/rules';
 import { addPoints, fetchStudentPoints } from '../api/points';
+import { fetchStudentPets, feedPet } from '../api/pets';
+import { getLevel, getLevelName, getLevelProgress, getExpToNextLevel, LEVEL_COLORS } from 'shared';
 
 export function StudentsPage() {
   const { data: classesData } = useSWR('classes', fetchClasses);
@@ -37,6 +39,16 @@ export function StudentsPage() {
     showHistory && historyStudentId ? ['point-history', historyStudentId] : null,
     () => fetchStudentPoints(historyStudentId)
   );
+
+  // 宠物面板
+  const [showPetPanel, setShowPetPanel] = useState(false);
+  const [petStudentId, setPetStudentId] = useState('');
+  const [petStudentName, setPetStudentName] = useState('');
+  const { data: petListData, mutate: mutatePets } = useSWR(
+    showPetPanel && petStudentId ? ['student-pets', petStudentId] : null,
+    () => fetchStudentPets(petStudentId)
+  );
+  const [feedingId, setFeedingId] = useState('');
 
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
@@ -118,6 +130,25 @@ export function StudentsPage() {
   const openHistory = (studentId: string) => {
     setHistoryStudentId(studentId);
     setShowHistory(true);
+  };
+
+  const openPetPanel = (studentId: string, studentName: string) => {
+    setPetStudentId(studentId);
+    setPetStudentName(studentName);
+    setShowPetPanel(true);
+  };
+
+  const handleFeed = async (studentPetId: string) => {
+    setFeedingId(studentPetId);
+    try {
+      await feedPet({ student_pet_id: studentPetId });
+      mutatePets();
+      mutate(['students', selectedClassId]);
+    } catch (err: any) {
+      alert(err.message || '喂养失败');
+    } finally {
+      setFeedingId('');
+    }
   };
 
   const quickPresets = rules.slice(0, 8);
@@ -204,6 +235,7 @@ export function StudentsPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button onClick={() => openPoints(s)} className="text-xs text-indigo-600 hover:underline mr-2">加减分</button>
+                    <button onClick={() => openPetPanel(s.id, s.name)} className="text-xs text-yellow-600 hover:underline mr-2">宠物</button>
                     <button onClick={() => openHistory(s.id)} className="text-xs text-gray-500 hover:underline mr-2">流水</button>
                     <button onClick={() => openEdit(s)} className="text-xs text-gray-500 hover:underline mr-2">编辑</button>
                     <button onClick={() => handleDeactivate(s.id, s.name)} className="text-xs text-red-500 hover:underline">移除</button>
@@ -318,6 +350,78 @@ export function StudentsPage() {
                 {saving ? '处理中...' : pointsChange > 0 ? `确认 +${pointsChange} 分` : `确认 ${pointsChange} 分`}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 宠物面板弹窗 */}
+      {showPetPanel && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowPetPanel(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl max-h-[75vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold mb-1">{petStudentName} 的宠物</h3>
+            <p className="text-sm text-gray-400 mb-4">共 {petListData?.data?.length || 0} 只</p>
+
+            {!petListData ? (
+              <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" /></div>
+            ) : petListData.data.length === 0 ? (
+              <div className="text-center py-10 text-gray-400">
+                <span className="text-4xl">🐾</span>
+                <p className="mt-2">还没有领养宠物，去宠物图鉴看看吧</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {petListData.data.map((sp: any) => {
+                  const level = getLevel(sp.current_exp);
+                  const progress = getLevelProgress(sp.current_exp);
+                  const nextExp = getExpToNextLevel(sp.current_exp);
+                  return (
+                    <div key={sp.id} className="bg-gray-50 rounded-xl p-4">
+                      <div className="flex items-center gap-4">
+                        <span className="text-4xl">{sp.emoji}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-semibold text-gray-800">{sp.nickname || sp.pet_name}</h4>
+                            <span className="text-xs text-gray-400">({sp.pet_name})</span>
+                          </div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`text-xs px-2 py-0.5 rounded-full text-white font-medium ${LEVEL_COLORS[level - 1] || 'bg-gray-400'}`}>
+                              Lv.{level} {getLevelName(sp.current_exp)}
+                            </span>
+                            <span className="text-xs text-gray-400">{sp.current_exp} EXP</span>
+                          </div>
+                          {/* EXP 进度条 */}
+                          <div className="mb-1">
+                            <div className="flex justify-between text-xs text-gray-400 mb-0.5">
+                              <span>成长进度</span>
+                              <span>{progress}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className={`h-2 rounded-full transition-all ${LEVEL_COLORS[level - 1] || 'bg-indigo-500'}`} style={{ width: `${progress}%` }} />
+                            </div>
+                          </div>
+                          {nextExp !== null && (
+                            <p className="text-xs text-gray-400">距离下一级还需 {nextExp} EXP</p>
+                          )}
+                          {nextExp === null && (
+                            <p className="text-xs text-yellow-600 font-medium">已达最高等级 🎉</p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleFeed(sp.id)}
+                          disabled={feedingId === sp.id || nextExp === null}
+                          className="px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 disabled:opacity-40 transition-colors text-xs font-medium"
+                        >
+                          {feedingId === sp.id ? '...' : '🍖 喂养 5分'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <button onClick={() => setShowPetPanel(false)} className="mt-4 w-full py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+              关闭
+            </button>
           </div>
         </div>
       )}
