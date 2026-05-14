@@ -5,6 +5,7 @@ import { TopBar } from './TopBar';
 import { DashboardPage } from '../../pages/DashboardPage';
 import { ClassesPage } from '../../pages/ClassesPage';
 import { StudentsPage } from '../../pages/StudentsPage';
+import { RulesPage } from '../../pages/RulesPage';
 
 export function Layout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -31,6 +32,7 @@ export function Layout() {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/classes" element={<ClassesPage />} />
             <Route path="/students" element={<StudentsPage />} />
+            <Route path="/rules" element={<RulesPage />} />
             <Route path="*" element={<DashboardPage />} />
           </Routes>
         </main>
