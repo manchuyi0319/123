@@ -3,6 +3,10 @@ export interface Teacher {
   username: string;
   display_name: string;
   avatar_url: string | null;
+  email: string | null;
+  phone: string | null;
+  bio: string | null;
+  school: string | null;
   role: 'admin' | 'teacher';
   created_at: string;
 }
@@ -12,6 +16,7 @@ export interface Class {
   teacher_id: string;
   name: string;
   grade: string | null;
+  school: string | null;
   description: string | null;
   is_archived: number;
   created_at: string;
@@ -78,12 +83,12 @@ export interface EvaluationRule {
 }
 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegisterRequest {
-  username: string;
+  email: string;
   password: string;
   display_name: string;
 }

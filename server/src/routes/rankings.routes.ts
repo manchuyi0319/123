@@ -88,7 +88,7 @@ router.get('/classes', (req: AuthRequest, res: Response) => {
   const isGlobal = req.query.scope === 'all';
 
   const classes = db.all(
-    `SELECT c.id, c.name, c.grade,
+    `SELECT c.id, c.name, c.grade, c.school,
             COUNT(s.id) AS student_count,
             COALESCE(ROUND(AVG(s.total_points), 1), 0) AS avg_points
      FROM classes c

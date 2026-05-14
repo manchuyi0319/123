@@ -1,13 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { Teacher, AuthResponse, LoginRequest, RegisterRequest } from 'shared';
+import type { Teacher, AuthResponse } from 'shared';
 import { apiRequest, setToken, clearToken, hasToken } from '../api/client';
 
 interface AuthState {
   teacher: Teacher | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (data: LoginRequest) => Promise<void>;
-  register: (data: RegisterRequest) => Promise<void>;
+  login: (data: { email: string; password: string }) => Promise<void>;
+  register: (data: { email: string; password: string; display_name: string }) => Promise<void>;
   logout: () => void;
 }
 
@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (data: LoginRequest) => {
+  const login = async (data: { email: string; password: string }) => {
     const res = await apiRequest<AuthResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTeacher(res.teacher);
   };
 
-  const register = async (data: RegisterRequest) => {
+  const register = async (data: { email: string; password: string; display_name: string }) => {
     const res = await apiRequest<AuthResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),

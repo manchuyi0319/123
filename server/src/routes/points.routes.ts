@@ -25,6 +25,22 @@ router.post('/', validate(addPointsSchema), (req: AuthRequest, res: Response) =>
     return;
   }
 
+  // 每日加分上限检查（仅加分时）
+  if (points_change > 0) {
+    const todayPoints = db.get(
+      `SELECT COALESCE(SUM(points_change), 0) as today_total
+       FROM point_records
+       WHERE student_id = ? AND points_change > 0 AND date(created_at) = date('now')`,
+      [student_id]
+    );
+    const todayTotal = (todayPoints as any).today_total || 0;
+    const DAILY_LIMIT = 20;
+    if (todayTotal + points_change > DAILY_LIMIT) {
+      res.status(400).json({ error: `该学生今日已获得 ${todayTotal} 积分，超过每日上限 ${DAILY_LIMIT} 分，操作取消` });
+      return;
+    }
+  }
+
   const id = crypto.randomUUID();
   const newPoints = (student as any).total_points + points_change;
 

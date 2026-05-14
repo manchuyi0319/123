@@ -10,7 +10,7 @@ router.get('/classes', (req: AuthRequest, res: Response) => {
   const db = getDb();
 
   const classes = db.all(
-    `SELECT c.id, c.name, c.grade, c.created_at,
+    `SELECT c.id, c.name, c.grade, c.school, c.created_at,
             t.display_name AS teacher_name, t.username AS teacher_username,
             COUNT(s.id) AS student_count,
             COALESCE(SUM(s.total_points), 0) AS total_points

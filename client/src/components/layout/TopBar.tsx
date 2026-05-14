@@ -1,7 +1,8 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export function TopBar() {
-  const { teacher, logout } = useAuth();
+  const { teacher } = useAuth();
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-end">
@@ -9,12 +10,13 @@ export function TopBar() {
         <span className="text-sm text-gray-600">
           👩‍🏫 {teacher?.display_name}
         </span>
-        <button
-          onClick={logout}
-          className="text-sm text-gray-400 hover:text-red-500 transition-colors"
+        <Link
+          to="/settings"
+          className="text-sm text-gray-400 hover:text-indigo-500 transition-colors"
+          title="设置"
         >
-          退出登录
-        </button>
+          ⚙️
+        </Link>
       </div>
     </header>
   );

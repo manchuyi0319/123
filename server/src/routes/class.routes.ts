@@ -11,12 +11,12 @@ router.use(authMiddleware);
 // 创建班级
 router.post('/', validate(createClassSchema), (req: AuthRequest, res: Response) => {
   const db = getDb();
-  const { name, grade, description } = req.body;
+  const { name, grade, school, description } = req.body;
   const id = crypto.randomUUID();
 
   db.run(
-    'INSERT INTO classes (id, teacher_id, name, grade, description) VALUES (?, ?, ?, ?, ?)',
-    [id, req.teacherId, name, grade || null, description || null]
+    'INSERT INTO classes (id, teacher_id, name, grade, school, description) VALUES (?, ?, ?, ?, ?, ?)',
+    [id, req.teacherId, name, grade || null, school || null, description || null]
   );
 
   const class_ = db.get('SELECT * FROM classes WHERE id = ?', [id]);
@@ -67,7 +67,7 @@ router.patch('/:id', validate(updateClassSchema), (req: AuthRequest, res: Respon
   const updates: string[] = [];
   const params: any[] = [];
 
-  for (const key of ['name', 'grade', 'description']) {
+  for (const key of ['name', 'grade', 'school', 'description']) {
     if (req.body[key] !== undefined) {
       updates.push(`${key} = ?`);
       params.push(req.body[key]);

@@ -55,22 +55,27 @@ export function RankingsPage() {
     <div>
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold text-gray-800">排行榜</h2>
-        <div className="flex bg-gray-100 rounded-lg p-0.5">
+      </div>
+
+      {/* Scope 切换 */}
+      <div className="flex items-center gap-3 mb-4">
+        <span className="text-sm text-gray-500">查看范围：</span>
+        <div className="flex bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setScope('my')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            className={`px-5 py-2 rounded-md text-sm font-medium transition-colors ${
               scope === 'my' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            我的
+            📋 我的
           </button>
           <button
             onClick={() => setScope('all')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            className={`px-5 py-2 rounded-md text-sm font-medium transition-colors ${
               scope === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            全平台
+            🌍 全平台
           </button>
         </div>
       </div>
@@ -171,7 +176,9 @@ export function RankingsPage() {
                 <>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-800 truncate">{item.name}</p>
-                    <p className="text-xs text-gray-400">{item.grade || '未设置年级'} · {item.student_count} 名学生</p>
+                    <p className="text-xs text-gray-400">
+                      {[item.school, item.grade].filter(Boolean).join(' · ') || '未设置学校/年级'} · {item.student_count} 名学生
+                    </p>
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-indigo-600">{item.avg_points}</p>

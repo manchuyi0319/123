@@ -42,7 +42,7 @@ export function DiscoverPage() {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="font-semibold text-gray-800">{c.name}</h3>
-                  <p className="text-xs text-gray-400">{c.grade || '未设置年级'}</p>
+                  <p className="text-xs text-gray-400">{[c.school, c.grade].filter(Boolean).join(' · ') || '未设置学校/年级'}</p>
                 </div>
                 <span className="text-sm font-bold text-indigo-600">{c.student_count} 人</span>
               </div>

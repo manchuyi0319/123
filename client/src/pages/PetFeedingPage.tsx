@@ -69,8 +69,6 @@ export function PetFeedingPage() {
     }
   };
 
-  const selectedPet = pets.length > 0 ? pets[0] : null;
-
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-800 mb-2">宠物喂养</h2>
@@ -123,7 +121,6 @@ export function PetFeedingPage() {
           {/* 宠物卡片网格 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {pets.map((sp: any) => {
-              const pet = sp.pet || sp;
               const level = getLevel(sp.current_exp);
               const levelName = getLevelName(sp.current_exp);
               const progress = getLevelProgress(sp.current_exp);
@@ -135,8 +132,8 @@ export function PetFeedingPage() {
                   {/* 宠物头像 */}
                   <div className="text-center mb-4">
                     <PetAvatar
-                      emoji={pet.emoji || '🐾'}
-                      rarity={pet.rarity || 'common'}
+                      emoji={sp.emoji || '🐾'}
+                      rarity={sp.rarity || 'common'}
                       size="xl"
                       animated={!isFeeding}
                     />
@@ -145,10 +142,10 @@ export function PetFeedingPage() {
                   {/* 宠物信息 */}
                   <div className="text-center mb-3">
                     <h3 className="font-semibold text-gray-800">
-                      {sp.nickname || pet.name}
+                      {sp.nickname || sp.pet_name}
                     </h3>
                     {sp.nickname && (
-                      <p className="text-xs text-gray-400">{pet.name}</p>
+                      <p className="text-xs text-gray-400">{sp.pet_name}</p>
                     )}
                     <span className={`inline-block mt-1 px-2 py-0.5 text-xs font-medium rounded-full ${
                       level >= 7 ? 'bg-yellow-50 text-yellow-600' :

@@ -5,10 +5,11 @@ import { fetchClasses, createClass, updateClass, archiveClass } from '../api/cla
 interface ClassForm {
   name: string;
   grade: string;
+  school: string;
   description: string;
 }
 
-const emptyForm: ClassForm = { name: '', grade: '', description: '' };
+const emptyForm: ClassForm = { name: '', grade: '', school: '', description: '' };
 
 export function ClassesPage() {
   const { data, error, isLoading } = useSWR('classes', fetchClasses);
@@ -27,7 +28,7 @@ export function ClassesPage() {
 
   const openEdit = (cls: any) => {
     setEditingId(cls.id);
-    setForm({ name: cls.name, grade: cls.grade || '', description: cls.description || '' });
+    setForm({ name: cls.name, grade: cls.grade || '', school: cls.school || '', description: cls.description || '' });
     setFormError('');
     setShowModal(true);
   };
@@ -98,6 +99,7 @@ export function ClassesPage() {
                 <div>
                   <h3 className="font-semibold text-lg text-gray-800">{cls.name}</h3>
                   {cls.grade && <p className="text-sm text-gray-400 mt-0.5">{cls.grade}</p>}
+                  {cls.school && <p className="text-sm text-gray-400 mt-0.5">{cls.school}</p>}
                 </div>
                 <span className="text-sm bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full">
                   {cls.student_count} 名学生
@@ -151,6 +153,16 @@ export function ClassesPage() {
                   onChange={e => setForm({ ...form, grade: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
                   placeholder="如：一年级"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">学校</label>
+                <input
+                  type="text"
+                  value={form.school}
+                  onChange={e => setForm({ ...form, school: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                  placeholder="如：育才小学"
                 />
               </div>
               <div>

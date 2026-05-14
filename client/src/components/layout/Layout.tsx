@@ -11,6 +11,8 @@ import { RankingsPage } from '../../pages/RankingsPage';
 import { AdminPage } from '../../pages/AdminPage';
 import { DiscoverPage } from '../../pages/DiscoverPage';
 import { PetFeedingPage } from '../../pages/PetFeedingPage';
+import { HelpPage } from '../../pages/HelpPage';
+import { SettingsPage } from '../../pages/SettingsPage';
 
 export function Layout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -43,6 +45,8 @@ export function Layout() {
             <Route path="/pets/feed" element={<PetFeedingPage />} />
             <Route path="/discover" element={<DiscoverPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<DashboardPage />} />
           </Routes>
         </main>

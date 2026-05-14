@@ -1,0 +1,4 @@
+ALTER TABLE teachers ADD COLUMN email TEXT;
+ALTER TABLE teachers ADD COLUMN phone TEXT;
+ALTER TABLE teachers ADD COLUMN bio TEXT;
+ALTER TABLE teachers ADD COLUMN school TEXT;

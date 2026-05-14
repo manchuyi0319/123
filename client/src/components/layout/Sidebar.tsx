@@ -10,13 +10,18 @@ const navItems = [
   { to: '/rankings', label: '排行榜', icon: '🏆' },
   { to: '/discover', label: '发现班级', icon: '🔍' },
   { to: '/rules', label: '评价规则', icon: '📋' },
+  { to: '/help', label: '操作说明', icon: '📖' },
+];
+
+const bottomItems = [
+  { to: '/settings', label: '设置', icon: '⚙️' },
 ];
 
 export function Sidebar() {
   const { teacher } = useAuth();
 
   const allItems = teacher?.role === 'admin'
-    ? [...navItems, { to: '/admin', label: '后台管理', icon: '⚙️' }]
+    ? [...navItems, { to: '/admin', label: '后台管理', icon: '🔧' }]
     : navItems;
 
   return (
@@ -26,7 +31,7 @@ export function Sidebar() {
           🐱 班级宠物园
         </h1>
       </div>
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
         {allItems.map(item => (
           <NavLink
             key={item.to}
@@ -44,6 +49,24 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
+      <div className="p-3 border-t border-gray-200">
+        {bottomItems.map(item => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-indigo-50 text-indigo-700'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`
+            }
+          >
+            <span className="text-lg">{item.icon}</span>
+            {item.label}
+          </NavLink>
+        ))}
+      </div>
     </aside>
   );
 }

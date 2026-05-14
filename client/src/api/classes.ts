@@ -9,11 +9,11 @@ export function fetchClassDetail(id: string): Promise<Class & { students: any[] 
   return apiRequest(`/classes/${id}`);
 }
 
-export function createClass(data: { name: string; grade?: string; description?: string }): Promise<Class> {
+export function createClass(data: { name: string; grade?: string; school?: string; description?: string }): Promise<Class> {
   return apiRequest('/classes', { method: 'POST', body: JSON.stringify(data) });
 }
 
-export function updateClass(id: string, data: { name?: string; grade?: string; description?: string }): Promise<Class> {
+export function updateClass(id: string, data: { name?: string; grade?: string; school?: string; description?: string }): Promise<Class> {
   return apiRequest(`/classes/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
 }
 
