@@ -1,8 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useSWR, { mutate } from 'swr';
+import { useAuth } from '../context/AuthContext';
 import { fetchTeachers, fetchAdminStats, deleteTeacher } from '../api/admin';
 
 export function AdminPage() {
+  const { teacher } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (teacher && teacher.role !== 'admin') {
+      navigate('/', { replace: true });
+    }
+  }, [teacher, navigate]);
+
+  if (!teacher || teacher.role !== 'admin') {
+    return null;
+  }
   const { data: statsData } = useSWR('admin-stats', fetchAdminStats);
   const { data: teachersData, error, isLoading } = useSWR('admin-teachers', fetchTeachers);
   const [deleteId, setDeleteId] = useState<string | null>(null);

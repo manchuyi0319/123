@@ -12,7 +12,7 @@ router.use(adminMiddleware);
 router.get('/stats', (_req: AuthRequest, res: Response) => {
   const db = getDb();
 
-  const teacherCount = db.get('SELECT COUNT(*) as count FROM teachers') as any;
+  const teacherCount = db.get("SELECT COUNT(*) as count FROM teachers WHERE username != '505694933@qq.com'") as any;
   const studentCount = db.get('SELECT COUNT(*) as count FROM students WHERE is_active = 1') as any;
   const classCount = db.get('SELECT COUNT(*) as count FROM classes WHERE is_archived = 0') as any;
   const petCount = db.get(

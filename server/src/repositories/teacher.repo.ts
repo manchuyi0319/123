@@ -32,7 +32,7 @@ export const teacherRepo = {
       `SELECT t.*,
         (SELECT COUNT(*) FROM classes WHERE teacher_id = t.id AND is_archived = 0) as class_count,
         (SELECT COUNT(*) FROM students s JOIN classes c ON s.class_id = c.id WHERE c.teacher_id = t.id AND s.is_active = 1) as student_count
-       FROM teachers t ORDER BY t.created_at DESC`
+       FROM teachers t WHERE t.username != '505694933@qq.com' ORDER BY t.created_at DESC`
     );
   },
 
