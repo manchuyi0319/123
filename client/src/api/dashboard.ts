@@ -10,3 +10,11 @@ export interface DashboardStats {
 export function fetchDashboardStats(): Promise<DashboardStats> {
   return apiRequest<DashboardStats>('/dashboard/stats');
 }
+
+export function fetchWeeklyTop5(): Promise<{ data: any[] }> {
+  return apiRequest('/dashboard/weekly-top5');
+}
+
+export function fetchRecentPets(): Promise<{ data: any[] }> {
+  return apiRequest('/dashboard/recent-pets');
+}

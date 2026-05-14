@@ -8,6 +8,7 @@ import studentRoutes from './routes/student.routes';
 import rulesRoutes from './routes/rules.routes';
 import pointsRoutes from './routes/points.routes';
 import petRoutes from './routes/pet.routes';
+import rankingsRoutes from './routes/rankings.routes';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/rules', rulesRoutes);
 app.use('/api/points', pointsRoutes);
 app.use('/api/pets', petRoutes);
+app.use('/api/rankings', rankingsRoutes);
 
 app.use(errorHandler);
 
