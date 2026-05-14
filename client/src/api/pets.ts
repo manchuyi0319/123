@@ -15,3 +15,7 @@ export function feedPet(data: { student_pet_id: string }): Promise<any> {
 export function fetchStudentPets(studentId: string): Promise<{ data: any[] }> {
   return apiRequest(`/pets/student/${studentId}`);
 }
+
+export function feedAllPets(data: { student_id: string }): Promise<{ data: any[]; total_exp_gain: number; total_cost: number; pet_count: number; level_ups: number }> {
+  return apiRequest('/pets/feed-all', { method: 'POST', body: JSON.stringify(data) });
+}

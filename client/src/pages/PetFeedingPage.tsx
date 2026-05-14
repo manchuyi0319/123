@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import useSWR, { mutate } from 'swr';
 import { useSearchParams } from 'react-router-dom';
 import { fetchStudents } from '../api/students';
-import { fetchStudentPets, feedPet } from '../api/pets';
+import { fetchStudentPets, feedPet, feedAllPets } from '../api/pets';
 import { getLevel, getLevelName, getLevelProgress, getExpToNextLevel } from 'shared';
 import { PetAvatar } from '../components/pet/PetAvatar';
 import { LevelUpModal } from '../components/pet/LevelUpModal';
@@ -14,8 +14,10 @@ export function PetFeedingPage() {
   const { data: studentsData } = useSWR('students-all', () => fetchStudents(''));
   const [selectedStudentId, setSelectedStudentId] = useState(initialStudentId);
   const [feedingId, setFeedingId] = useState<string | null>(null);
+  const [batchFeeding, setBatchFeeding] = useState(false);
   const [feedError, setFeedError] = useState('');
   const [feedResult, setFeedResult] = useState<{ expGain: number; petName: string } | null>(null);
+  const [batchResult, setBatchResult] = useState<{ totalExpGain: number; petCount: number; levelUps: number } | null>(null);
 
   // Level up modal state
   const [levelUp, setLevelUp] = useState<{
@@ -39,6 +41,13 @@ export function PetFeedingPage() {
     }
   }, [feedResult]);
 
+  useEffect(() => {
+    if (batchResult) {
+      const t = setTimeout(() => setBatchResult(null), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [batchResult]);
+
   const handleFeed = async (sp: any) => {
     const oldExp = sp.current_exp;
     setFeedingId(sp.id);
@@ -48,15 +57,15 @@ export function PetFeedingPage() {
       const newExp = result.current_exp;
       const expGain = result.exp_gain || (newExp - oldExp);
 
-      setFeedResult({ expGain, petName: sp.nickname || sp.pet?.name || sp.pet_name || '宠物' });
+      setFeedResult({ expGain, petName: sp.nickname || sp.pet_name || '宠物' });
 
       // 检查升级
       if (getLevel(newExp) > getLevel(oldExp)) {
         setLevelUp({
           oldExp,
           newExp,
-          petName: sp.nickname || sp.pet?.name || sp.pet_name || '宠物',
-          emoji: sp.pet?.emoji || sp.emoji || '🐾',
+          petName: sp.nickname || sp.pet_name || '宠物',
+          emoji: sp.emoji || '🐾',
         });
       }
 
@@ -69,27 +78,92 @@ export function PetFeedingPage() {
     }
   };
 
+  const handleFeedAll = async () => {
+    if (!selectedStudentId) return;
+    const studentPts = selectedStudent?.total_points || 0;
+    const cost = pets.length * 5;
+    if (studentPts < cost) {
+      setFeedError(`积分不足，喂养 ${pets.length} 只宠物需要 ${cost} 积分，当前 ${studentPts} 积分`);
+      return;
+    }
+    setBatchFeeding(true);
+    setFeedError('');
+    try {
+      const result = await feedAllPets({ student_id: selectedStudentId });
+      setBatchResult({
+        totalExpGain: result.total_exp_gain,
+        petCount: result.pet_count,
+        levelUps: result.level_ups,
+      });
+      // 检查是否有升级
+      if (result.level_ups > 0) {
+        const firstPet = result.data?.[0];
+        if (firstPet) {
+          setLevelUp({
+            oldExp: Math.max(0, firstPet.current_exp - 20),
+            newExp: firstPet.current_exp,
+            petName: `${result.pet_count} 只宠物`,
+            emoji: '🎉',
+          });
+        }
+      }
+      mutate(['student-pets', selectedStudentId]);
+      mutate('students-all');
+    } catch (err: any) {
+      setFeedError(err.message || '批量喂养失败');
+    } finally {
+      setBatchFeeding(false);
+    }
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-800 mb-2">宠物喂养</h2>
       <p className="text-sm text-gray-400 mb-6">选择学生，喂养宠物，见证它们成长</p>
 
       {/* 学生选择器 */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">选择学生</label>
-        <select
-          value={selectedStudentId}
-          onChange={e => setSelectedStudentId(e.target.value)}
-          className="w-full md:w-80 px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white"
-        >
-          <option value="">请选择学生</option>
-          {students.map((s: any) => (
-            <option key={s.id} value={s.id}>{s.name} {s.class_name ? `· ${s.class_name}` : ''} (⭐{s.total_points})</option>
-          ))}
-        </select>
+      <div className="mb-4 flex flex-wrap items-end gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">选择学生</label>
+          <select
+            value={selectedStudentId}
+            onChange={e => setSelectedStudentId(e.target.value)}
+            className="w-72 px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white"
+          >
+            <option value="">请选择学生</option>
+            {students.map((s: any) => (
+              <option key={s.id} value={s.id}>{s.name} {s.class_name ? `· ${s.class_name}` : ''} (⭐{s.total_points})</option>
+            ))}
+          </select>
+        </div>
+        {pets.length > 0 && (
+          <button
+            onClick={handleFeedAll}
+            disabled={batchFeeding || (selectedStudent?.total_points || 0) < pets.length * 5}
+            className="px-4 py-2.5 bg-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-500 disabled:opacity-50 transition-colors text-sm font-medium active:scale-95"
+          >
+            {batchFeeding ? '🍖 喂养中...' : `🍖 一键喂养 (${pets.length * 5} 分)`}
+          </button>
+        )}
       </div>
 
       {feedError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">{feedError}</div>}
+
+      {/* 批量喂养结果 */}
+      {batchResult && (
+        <div className="mb-4 px-4 py-3 bg-green-50 text-green-700 rounded-lg text-sm animate-pulse">
+          🎉 已喂养 <strong>{batchResult.petCount}</strong> 只宠物，
+          共获得 <strong>+{batchResult.totalExpGain} EXP</strong>
+          {batchResult.levelUps > 0 && <>，<strong>{batchResult.levelUps} 只升级</strong></>}
+        </div>
+      )}
+
+      {/* 单只喂养结果 */}
+      {feedResult && !batchResult && (
+        <div className="mb-4 px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm animate-pulse">
+          🍖 {feedResult.petName} 获得 <strong>+{feedResult.expGain} EXP</strong>
+        </div>
+      )}
 
       {!selectedStudentId ? (
         <div className="text-center py-20 text-gray-400">
@@ -111,13 +185,6 @@ export function PetFeedingPage() {
         </div>
       ) : (
         <>
-          {/* 喂养结果提示 */}
-          {feedResult && (
-            <div className="mb-4 px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm animate-pulse">
-              🍖 {feedResult.petName} 获得 <strong>+{feedResult.expGain} EXP</strong>
-            </div>
-          )}
-
           {/* 宠物卡片网格 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {pets.map((sp: any) => {
@@ -135,7 +202,7 @@ export function PetFeedingPage() {
                       emoji={sp.emoji || '🐾'}
                       rarity={sp.rarity || 'common'}
                       size="xl"
-                      animated={!isFeeding}
+                      animated={!isFeeding && !batchFeeding}
                     />
                   </div>
 
@@ -160,7 +227,7 @@ export function PetFeedingPage() {
                   <div className="mb-4">
                     <div className="flex justify-between text-xs text-gray-400 mb-1">
                       <span>EXP: {sp.current_exp}</span>
-                      <span>{nextExp !== null ? `距离下一级还需 ${nextExp} EXP` : '已达最高等级 🎉'}</span>
+                      <span>{nextExp !== null ? `距离下一级还需 ${nextExp} EXP` : '已达最高等级'}</span>
                     </div>
                     <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
                       <div
@@ -177,7 +244,7 @@ export function PetFeedingPage() {
                   {/* 喂养按钮 */}
                   <button
                     onClick={() => handleFeed(sp)}
-                    disabled={isFeeding || nextExp === null || (selectedStudent?.total_points || 0) < 5}
+                    disabled={isFeeding || batchFeeding || nextExp === null || (selectedStudent?.total_points || 0) < 5}
                     className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all ${
                       nextExp === null
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
@@ -187,9 +254,9 @@ export function PetFeedingPage() {
                     } disabled:opacity-60`}
                   >
                     {nextExp === null
-                      ? '🏆 已满级'
+                      ? '满级'
                       : isFeeding
-                        ? '🍖 喂养中...'
+                        ? '喂养中...'
                         : `🍖 喂养 (5 积分)`
                     }
                   </button>

@@ -4,6 +4,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { validate } from '../middleware/validate';
 import { adoptPetSchema, feedPetSchema } from '../validators/pet.validator';
 import { getDb } from '../database/connection';
+import { getLevel } from 'shared';
 
 const router = Router();
 router.use(authMiddleware);
@@ -120,6 +121,78 @@ router.post('/feed', validate(feedPetSchema), (req: AuthRequest, res: Response) 
     [student_pet_id]
   );
   res.json({ ...updated, exp_gain: expGain });
+});
+
+// 一键喂养某学生所有宠物
+router.post('/feed-all', (req: AuthRequest, res: Response) => {
+  const db = getDb();
+  const { student_id } = req.body;
+
+  // 验证学生属于该教师
+  const student = db.get(
+    `SELECT s.id, s.total_points FROM students s
+     JOIN classes c ON s.class_id = c.id
+     WHERE s.id = ? AND c.teacher_id = ? AND s.is_active = 1`,
+    [student_id, req.teacherId]
+  );
+  if (!student) { res.status(404).json({ error: '学生不存在或无权操作' }); return; }
+
+  const pets = db.all(
+    `SELECT sp.*, p.name as pet_name, p.emoji, p.rarity
+     FROM student_pets sp JOIN pets p ON sp.pet_id = p.id
+     WHERE sp.student_id = ? AND sp.is_active = 1`,
+    [student_id]
+  );
+  if (pets.length === 0) { res.status(400).json({ error: '该学生没有宠物' }); return; }
+
+  const st = student as any;
+  const totalCost = pets.length * FEED_COST;
+  if (st.total_points < totalCost) {
+    res.status(400).json({ error: `积分不足，喂养 ${pets.length} 只宠物需要 ${totalCost} 积分，当前 ${st.total_points} 积分` });
+    return;
+  }
+
+  const results: any[] = [];
+  let totalExpGain = 0;
+  let levelUps = 0;
+
+  for (const sp of pets) {
+    const oldLevel = getLevel((sp as any).current_exp || 0);
+    const expGain = Math.floor(Math.random() * 21) + 10;
+
+    db.run(
+      "UPDATE student_pets SET current_exp = current_exp + ?, last_fed_at = datetime('now') WHERE id = ?",
+      [expGain, (sp as any).id]
+    );
+
+    const newExp = (sp as any).current_exp + expGain;
+    if (getLevel(newExp) > oldLevel) levelUps++;
+
+    totalExpGain += expGain;
+
+    const updated = db.get(
+      `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity
+       FROM student_pets sp JOIN pets p ON sp.pet_id = p.id WHERE sp.id = ?`,
+      [(sp as any).id]
+    );
+    results.push(updated);
+  }
+
+  // 扣除总积分
+  const pointId = crypto.randomUUID();
+  db.run(
+    'INSERT INTO point_records (id, student_id, teacher_id, points_change, reason, category) VALUES (?, ?, ?, ?, ?, ?)',
+    [pointId, student_id, req.teacherId, -totalCost, `一键喂养 ${pets.length} 只宠物 +${totalExpGain}EXP`, 'feeding']
+  );
+  db.run('UPDATE students SET total_points = total_points + ? WHERE id = ?', [-totalCost, student_id]);
+
+  res.json({
+    data: results,
+    total_exp_gain: totalExpGain,
+    total_cost: totalCost,
+    pet_count: pets.length,
+    level_ups: levelUps,
+  });
 });
 
 // 获取某个学生的宠物列表
