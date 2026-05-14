@@ -4,6 +4,7 @@ import { fetchPets, adoptPet } from '../api/pets';
 import { fetchClasses } from '../api/classes';
 import { fetchStudents } from '../api/students';
 import { RARITY_LABELS, RARITY_COLORS } from 'shared';
+import { PetAvatar } from '../components/pet/PetAvatar';
 
 const RARITY_ORDER = ['legendary', 'epic', 'rare', 'common'];
 const ADOPT_COST: Record<string, number> = { common: 0, rare: 10, epic: 30, legendary: 50 };
@@ -78,9 +79,9 @@ export function PetsPage() {
             <h3 className="text-sm font-medium text-gray-500 uppercase mb-3">{group.label} ({group.pets.length} 种)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {group.pets.map((pet: any) => (
-                <div key={pet.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                  <div className="text-center mb-3">
-                    <span className="text-5xl">{pet.emoji}</span>
+                <div key={pet.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+                  <div className="text-center mb-3 flex justify-center">
+                    <PetAvatar emoji={pet.emoji} rarity={pet.rarity} size="lg" />
                   </div>
                   <h4 className="font-semibold text-gray-800 text-center mb-1">{pet.name}</h4>
                   <p className="text-xs text-gray-400 text-center mb-3">{pet.species} · {RARITY_LABELS[pet.rarity]}</p>

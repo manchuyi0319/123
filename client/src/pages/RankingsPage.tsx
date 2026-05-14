@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { fetchStudentRankings, fetchPetRankings, fetchClassRankings } from '../api/rankings';
 import { fetchClasses } from '../api/classes';
 import { getLevel, getLevelName } from 'shared';
+import { PetAvatar } from '../components/pet/PetAvatar';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 const TABS = [
@@ -148,7 +149,7 @@ export function RankingsPage() {
 
               {activeTab === 'pets' && (
                 <>
-                  <span className="text-2xl">{item.emoji}</span>
+                  <PetAvatar emoji={item.emoji} rarity={item.rarity} size="sm" animated={idx < 3} />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-800 truncate">
                       {item.nickname || item.pet_name}

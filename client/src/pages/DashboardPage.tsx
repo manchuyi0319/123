@@ -2,6 +2,7 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import { fetchDashboardStats, fetchWeeklyTop5, fetchRecentPets } from '../api/dashboard';
 import { getLevel, getLevelName } from 'shared';
+import { PetAvatar } from '../components/pet/PetAvatar';
 
 export function DashboardPage() {
   const [scope, setScope] = useState<'my' | 'all'>('my');
@@ -106,7 +107,7 @@ export function DashboardPage() {
             <div className="space-y-3">
               {recentPets.map((item: any) => (
                 <div key={item.id} className="flex items-center gap-3 py-2">
-                  <span className="text-2xl">{item.emoji}</span>
+                  <PetAvatar emoji={item.emoji} rarity={item.rarity} size="sm" animated={false} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">
                       {item.nickname || item.pet_name}

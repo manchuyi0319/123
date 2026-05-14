@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import useSWR, { mutate } from 'swr';
 import { fetchClasses } from '../api/classes';
 import { fetchStudents, addStudent, batchAddStudents, updateStudent, deactivateStudent } from '../api/students';
@@ -419,7 +420,10 @@ export function StudentsPage() {
                 })}
               </div>
             )}
-            <button onClick={() => setShowPetPanel(false)} className="mt-4 w-full py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+            <Link to={`/pets/feed?studentId=${petStudentId}`} className="block mt-4 w-full py-2 text-center text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium">
+              🍖 去喂养页面
+            </Link>
+            <button onClick={() => setShowPetPanel(false)} className="mt-2 w-full py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
               关闭
             </button>
           </div>

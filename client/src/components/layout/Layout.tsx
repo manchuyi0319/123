@@ -10,6 +10,7 @@ import { PetsPage } from '../../pages/PetsPage';
 import { RankingsPage } from '../../pages/RankingsPage';
 import { AdminPage } from '../../pages/AdminPage';
 import { DiscoverPage } from '../../pages/DiscoverPage';
+import { PetFeedingPage } from '../../pages/PetFeedingPage';
 
 export function Layout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -39,6 +40,7 @@ export function Layout() {
             <Route path="/rules" element={<RulesPage />} />
             <Route path="/pets" element={<PetsPage />} />
             <Route path="/rankings" element={<RankingsPage />} />
+            <Route path="/pets/feed" element={<PetFeedingPage />} />
             <Route path="/discover" element={<DiscoverPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="*" element={<DashboardPage />} />
