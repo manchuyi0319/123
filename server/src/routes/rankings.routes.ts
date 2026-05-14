@@ -15,15 +15,31 @@ function verifyClassOwnership(classId: string, teacherId: string): boolean {
   return !!c;
 }
 
+function classExists(classId: string): boolean {
+  const c = getDb().get(
+    'SELECT id FROM classes WHERE id = ? AND is_archived = 0',
+    [classId]
+  );
+  return !!c;
+}
+
 // 学生积分排行榜
 router.get('/students', validate(rankingsQuerySchema), (req: AuthRequest, res: Response) => {
   const db = getDb();
-  const { class_id } = req.query;
+  const { class_id, scope } = req.query;
+  const isGlobal = scope === 'all';
 
   if (class_id) {
-    if (!verifyClassOwnership(class_id as string, req.teacherId!)) {
-      res.status(404).json({ error: '班级不存在或无权操作' });
-      return;
+    if (isGlobal) {
+      if (!classExists(class_id as string)) {
+        res.status(404).json({ error: '班级不存在' });
+        return;
+      }
+    } else {
+      if (!verifyClassOwnership(class_id as string, req.teacherId!)) {
+        res.status(404).json({ error: '班级不存在或无权操作' });
+        return;
+      }
     }
   }
 
@@ -31,10 +47,13 @@ router.get('/students', validate(rankingsQuerySchema), (req: AuthRequest, res: R
     `SELECT s.id, s.name, s.total_points, c.name AS class_name, c.id AS class_id
      FROM students s
      JOIN classes c ON s.class_id = c.id
-     WHERE c.teacher_id = ? AND s.is_active = 1 AND c.is_archived = 0
+     WHERE s.is_active = 1 AND c.is_archived = 0
+       ${isGlobal ? '' : 'AND c.teacher_id = ?'}
        AND (s.class_id = ? OR ? IS NULL)
      ORDER BY s.total_points DESC`,
-    [req.teacherId, class_id || null, class_id || null]
+    isGlobal
+      ? [class_id || null, class_id || null]
+      : [req.teacherId, class_id || null, class_id || null]
   );
 
   res.json({ data: students });
@@ -43,6 +62,7 @@ router.get('/students', validate(rankingsQuerySchema), (req: AuthRequest, res: R
 // 宠物等级排行榜
 router.get('/pets', (req: AuthRequest, res: Response) => {
   const db = getDb();
+  const isGlobal = req.query.scope === 'all';
 
   const pets = db.all(
     `SELECT sp.id, sp.nickname, sp.current_exp,
@@ -53,9 +73,10 @@ router.get('/pets', (req: AuthRequest, res: Response) => {
      JOIN pets p ON sp.pet_id = p.id
      JOIN students s ON sp.student_id = s.id
      JOIN classes c ON s.class_id = c.id
-     WHERE c.teacher_id = ? AND sp.is_active = 1 AND s.is_active = 1 AND c.is_archived = 0
+     WHERE sp.is_active = 1 AND s.is_active = 1 AND c.is_archived = 0
+       ${isGlobal ? '' : 'AND c.teacher_id = ?'}
      ORDER BY sp.current_exp DESC`,
-    [req.teacherId]
+    isGlobal ? [] : [req.teacherId]
   );
 
   res.json({ data: pets });
@@ -64,6 +85,7 @@ router.get('/pets', (req: AuthRequest, res: Response) => {
 // 班级平均分排行榜
 router.get('/classes', (req: AuthRequest, res: Response) => {
   const db = getDb();
+  const isGlobal = req.query.scope === 'all';
 
   const classes = db.all(
     `SELECT c.id, c.name, c.grade,
@@ -71,10 +93,11 @@ router.get('/classes', (req: AuthRequest, res: Response) => {
             COALESCE(ROUND(AVG(s.total_points), 1), 0) AS avg_points
      FROM classes c
      LEFT JOIN students s ON s.class_id = c.id AND s.is_active = 1
-     WHERE c.teacher_id = ? AND c.is_archived = 0
+     WHERE c.is_archived = 0
+       ${isGlobal ? '' : 'AND c.teacher_id = ?'}
      GROUP BY c.id
      ORDER BY avg_points DESC`,
-    [req.teacherId]
+    isGlobal ? [] : [req.teacherId]
   );
 
   res.json({ data: classes });

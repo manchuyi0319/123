@@ -7,14 +7,17 @@ export interface DashboardStats {
   todayPoints: number;
 }
 
-export function fetchDashboardStats(): Promise<DashboardStats> {
-  return apiRequest<DashboardStats>('/dashboard/stats');
+export function fetchDashboardStats(scope?: string): Promise<DashboardStats> {
+  const query = scope === 'all' ? '?scope=all' : '';
+  return apiRequest<DashboardStats>(`/dashboard/stats${query}`);
 }
 
-export function fetchWeeklyTop5(): Promise<{ data: any[] }> {
-  return apiRequest('/dashboard/weekly-top5');
+export function fetchWeeklyTop5(scope?: string): Promise<{ data: any[] }> {
+  const query = scope === 'all' ? '?scope=all' : '';
+  return apiRequest(`/dashboard/weekly-top5${query}`);
 }
 
-export function fetchRecentPets(): Promise<{ data: any[] }> {
-  return apiRequest('/dashboard/recent-pets');
+export function fetchRecentPets(scope?: string): Promise<{ data: any[] }> {
+  const query = scope === 'all' ? '?scope=all' : '';
+  return apiRequest(`/dashboard/recent-pets${query}`);
 }

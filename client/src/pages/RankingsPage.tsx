@@ -21,19 +21,20 @@ function RankBadge({ rank }: { rank: number }) {
 export function RankingsPage() {
   const [activeTab, setActiveTab] = useState('students');
   const [filterClassId, setFilterClassId] = useState('');
+  const [scope, setScope] = useState<'my' | 'all'>('my');
 
   const { data: classesData } = useSWR('classes', fetchClasses);
   const { data: studentsData, error: studentsError, isLoading: studentsLoading } = useSWR(
-    ['rankings-students', filterClassId],
-    () => fetchStudentRankings(filterClassId || undefined)
+    ['rankings-students', filterClassId, scope],
+    () => fetchStudentRankings(filterClassId || undefined, scope)
   );
   const { data: petsData, error: petsError, isLoading: petsLoading } = useSWR(
-    'rankings-pets',
-    fetchPetRankings
+    ['rankings-pets', scope],
+    () => fetchPetRankings(scope)
   );
   const { data: classesRankData, error: classesError, isLoading: classesLoading } = useSWR(
-    'rankings-classes',
-    fetchClassRankings
+    ['rankings-classes', scope],
+    () => fetchClassRankings(scope)
   );
 
   const classes = classesData?.data || [];
@@ -51,8 +52,30 @@ export function RankingsPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">排行榜</h2>
-      <p className="text-sm text-gray-400 mb-6">查看学生积分、宠物等级和班级平均分排名</p>
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-2xl font-bold text-gray-800">排行榜</h2>
+        <div className="flex bg-gray-100 rounded-lg p-0.5">
+          <button
+            onClick={() => setScope('my')}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              scope === 'my' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            我的
+          </button>
+          <button
+            onClick={() => setScope('all')}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              scope === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            全平台
+          </button>
+        </div>
+      </div>
+      <p className="text-sm text-gray-400 mb-6">
+        {scope === 'all' ? '查看所有教师的班级和学生排名' : '查看自己班级的学生排名'}
+      </p>
 
       {/* Tab 切换 */}
       <div className="flex gap-1 mb-4 bg-gray-100 rounded-lg p-1 w-fit">
@@ -71,8 +94,8 @@ export function RankingsPage() {
         ))}
       </div>
 
-      {/* 班级筛选（仅学生榜显示） */}
-      {activeTab === 'students' && (
+      {/* 班级筛选（仅学生榜 + 我的模式） */}
+      {activeTab === 'students' && scope === 'my' && (
         <div className="mb-4">
           <select
             value={filterClassId}
@@ -110,7 +133,6 @@ export function RankingsPage() {
             >
               <RankBadge rank={idx} />
 
-              {/* 学生榜行内容 */}
               {activeTab === 'students' && (
                 <>
                   <div className="flex-1 min-w-0">
@@ -124,7 +146,6 @@ export function RankingsPage() {
                 </>
               )}
 
-              {/* 宠物榜行内容 */}
               {activeTab === 'pets' && (
                 <>
                   <span className="text-2xl">{item.emoji}</span>
@@ -145,7 +166,6 @@ export function RankingsPage() {
                 </>
               )}
 
-              {/* 班级榜行内容 */}
               {activeTab === 'classes' && (
                 <>
                   <div className="flex-1 min-w-0">
