@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { errorHandler } from './middleware/error-handler';
 import authRoutes from './routes/auth.routes';
 import dashboardRoutes from './routes/dashboard.routes';
@@ -37,6 +38,14 @@ app.use('/api/pets', petRoutes);
 app.use('/api/rankings', rankingsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/discover', discoverRoutes);
+
+// 生产环境：托管前端静态文件
+const distPath = path.resolve(__dirname, '../../client/dist');
+app.use(express.static(distPath));
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) return next();
+  res.sendFile(path.join(distPath, 'index.html'));
+});
 
 app.use(errorHandler);
 
