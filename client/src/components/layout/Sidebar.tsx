@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
   { to: '/', label: '仪表盘', icon: '📊' },
@@ -10,6 +9,7 @@ const navItems = [
   { to: '/rankings', label: '排行榜', icon: '🏆' },
   { to: '/discover', label: '发现班级', icon: '🔍' },
   { to: '/rules', label: '评价规则', icon: '📋' },
+  { to: '/admin', label: '后台管理', icon: '🔧' },
   { to: '/help', label: '操作说明', icon: '📖' },
 ];
 
@@ -18,12 +18,6 @@ const bottomItems = [
 ];
 
 export function Sidebar() {
-  const { teacher } = useAuth();
-
-  const allItems = teacher?.role === 'admin'
-    ? [...navItems, { to: '/admin', label: '后台管理', icon: '🔧' }]
-    : navItems;
-
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
       <div className="p-5 border-b border-gray-200">
@@ -32,7 +26,7 @@ export function Sidebar() {
         </h1>
       </div>
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-        {allItems.map(item => (
+        {navItems.map(item => (
           <NavLink
             key={item.to}
             to={item.to}
