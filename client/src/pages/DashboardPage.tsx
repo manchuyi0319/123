@@ -1,14 +1,28 @@
+import useSWR from 'swr';
+import { fetchDashboardStats } from '../api/dashboard';
+
 export function DashboardPage() {
+  const { data, error, isLoading } = useSWR('dashboard-stats', fetchDashboardStats);
+
+  const stats = [
+    { label: '班级数量', value: isLoading ? '-' : data?.classCount ?? 0, icon: '🏫', color: 'bg-blue-50 text-blue-600' },
+    { label: '学生总数', value: isLoading ? '-' : data?.studentCount ?? 0, icon: '👨‍🎓', color: 'bg-green-50 text-green-600' },
+    { label: '领养宠物', value: isLoading ? '-' : data?.petCount ?? 0, icon: '🐾', color: 'bg-purple-50 text-purple-600' },
+    { label: '今日积分', value: isLoading ? '-' : data?.todayPoints ?? 0, icon: '⭐', color: 'bg-yellow-50 text-yellow-600' },
+  ];
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-800 mb-6">仪表盘</h2>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+          加载失败，请刷新重试
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {[
-          { label: '班级数量', value: '0', icon: '🏫', color: 'bg-blue-50 text-blue-600' },
-          { label: '学生总数', value: '0', icon: '👨‍🎓', color: 'bg-green-50 text-green-600' },
-          { label: '领养宠物', value: '0', icon: '🐾', color: 'bg-purple-50 text-purple-600' },
-          { label: '今日积分', value: '0', icon: '⭐', color: 'bg-yellow-50 text-yellow-600' },
-        ].map(stat => (
+        {stats.map(stat => (
           <div key={stat.label} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between">
               <div>

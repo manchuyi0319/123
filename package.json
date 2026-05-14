@@ -1,7 +1,11 @@
 {
   "name": "class-pet-garden",
   "private": true,
-  "workspaces": ["shared", "server", "client"],
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
   "scripts": {
     "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
     "dev:server": "npm run dev -w server",
@@ -10,6 +14,7 @@
     "start": "npm start -w server"
   },
   "devDependencies": {
+    "@types/sql.js": "^1.4.11",
     "concurrently": "^8.2.2"
   }
 }

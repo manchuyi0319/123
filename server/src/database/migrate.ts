@@ -23,10 +23,8 @@ export function runMigrations(database: Database): void {
   for (const file of files) {
     if (applied.has(file)) continue;
     const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf-8');
-    database.transaction(() => {
-      database.exec(sql);
-      database.run('INSERT INTO _migrations (name) VALUES (?)', [file]);
-      console.log(`  Migration applied: ${file}`);
-    });
+    database.exec(sql);
+    database.run('INSERT INTO _migrations (name) VALUES (?)', [file]);
+    console.log(`  Migration applied: ${file}`);
   }
 }

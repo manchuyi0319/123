@@ -50,7 +50,13 @@ export class Database {
   }
 
   exec(sql: string): void {
-    this.db.run(sql);
+    const statements = sql
+      .split(';')
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+    for (const stmt of statements) {
+      this.db.run(stmt + ';');
+    }
     this.save();
   }
 

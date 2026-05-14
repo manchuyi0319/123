@@ -1,9 +1,14 @@
 import { getDb } from '../database/connection';
 import type { Teacher } from 'shared';
 
+export interface TeacherRow extends Teacher {
+  password_hash: string;
+  updated_at: string;
+}
+
 export const teacherRepo = {
-  findByUsername(username: string): Teacher | undefined {
-    return getDb().get('SELECT * FROM teachers WHERE username = ?', [username]) as Teacher | undefined;
+  findByUsername(username: string): TeacherRow | undefined {
+    return getDb().get('SELECT * FROM teachers WHERE username = ?', [username]) as TeacherRow | undefined;
   },
 
   findById(id: string): Teacher | undefined {

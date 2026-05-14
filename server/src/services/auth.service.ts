@@ -25,19 +25,19 @@ export const authService = {
   },
 
   login(username: string, password: string): AuthResponse {
-    const teacher = teacherRepo.findByUsername(username);
-    if (!teacher) {
+    const row = teacherRepo.findByUsername(username);
+    if (!row) {
       throw new UnauthorizedError('用户名或密码错误');
     }
 
-    const valid = bcrypt.compareSync(password, teacher.password_hash || '');
+    const valid = bcrypt.compareSync(password, row.password_hash);
     if (!valid) {
       throw new UnauthorizedError('用户名或密码错误');
     }
 
-    const token = signToken(teacher.id);
-    const { password_hash, ...safeTeacher } = teacher as any;
-    return { token, teacher: safeTeacher };
+    const token = signToken(row.id);
+    const { password_hash, updated_at, ...teacher } = row;
+    return { token, teacher };
   },
 
   getMe(teacherId: string): Teacher {
