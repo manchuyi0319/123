@@ -9,6 +9,7 @@ import rulesRoutes from './routes/rules.routes';
 import pointsRoutes from './routes/points.routes';
 import petRoutes from './routes/pet.routes';
 import rankingsRoutes from './routes/rankings.routes';
+import adminRoutes from './routes/admin.routes';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/rules', rulesRoutes);
 app.use('/api/points', pointsRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/rankings', rankingsRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use(errorHandler);
 
