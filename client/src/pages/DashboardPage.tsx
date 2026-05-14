@@ -81,7 +81,7 @@ export function DashboardPage() {
                     <p className="text-sm font-medium text-gray-800">
                       {item.nickname || item.pet_name}
                       <span className="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-600">
-                        Lv.{getLevel(item.current_exp) + 1} {getLevelName(item.current_exp)}
+                        Lv.{getLevel(item.current_exp)} {getLevelName(item.current_exp)}
                       </span>
                     </p>
                     <p className="text-xs text-gray-400">{item.student_name} · {item.class_name}</p>

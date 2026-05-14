@@ -138,7 +138,7 @@ export function RankingsPage() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-50 text-indigo-600 mb-1">
-                      Lv.{getLevel(item.current_exp) + 1} {getLevelName(item.current_exp)}
+                      Lv.{getLevel(item.current_exp)} {getLevelName(item.current_exp)}
                     </span>
                     <p className="text-xs text-gray-400">{item.current_exp} EXP</p>
                   </div>
