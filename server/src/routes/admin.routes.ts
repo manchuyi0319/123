@@ -48,6 +48,13 @@ router.delete('/teachers/:id', (req: AuthRequest, res: Response) => {
     return;
   }
 
+  // 保护永久管理员（即使角色被意外修改也不能删除）
+  const fullTeacher = teacherRepo.findByIdWithPassword(req.params.id);
+  if (fullTeacher && (fullTeacher as any).username === '505694933@qq.com') {
+    res.status(400).json({ error: '不能删除永久管理员账号' });
+    return;
+  }
+
   teacherRepo.deleteById(req.params.id);
   res.json({ success: true });
 });

@@ -53,6 +53,10 @@ export const teacherRepo = {
     }
   },
 
+  setRole(id: string, role: string): void {
+    getDb().run("UPDATE teachers SET role = ?, updated_at = datetime('now') WHERE id = ?", [role, id]);
+  },
+
   updatePassword(id: string, passwordHash: string): void {
     getDb().run("UPDATE teachers SET password_hash = ?, updated_at = datetime('now') WHERE id = ?", [passwordHash, id]);
   },

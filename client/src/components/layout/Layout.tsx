@@ -1,18 +1,7 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Outlet, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
-import { DashboardPage } from '../../pages/DashboardPage';
-import { ClassesPage } from '../../pages/ClassesPage';
-import { StudentsPage } from '../../pages/StudentsPage';
-import { RulesPage } from '../../pages/RulesPage';
-import { PetsPage } from '../../pages/PetsPage';
-import { RankingsPage } from '../../pages/RankingsPage';
-import { AdminPage } from '../../pages/AdminPage';
-import { DiscoverPage } from '../../pages/DiscoverPage';
-import { PetFeedingPage } from '../../pages/PetFeedingPage';
-import { HelpPage } from '../../pages/HelpPage';
-import { SettingsPage } from '../../pages/SettingsPage';
 
 export function Layout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -35,20 +24,7 @@ export function Layout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar />
         <main className="flex-1 overflow-y-auto p-6">
-          <Routes>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/classes" element={<ClassesPage />} />
-            <Route path="/students" element={<StudentsPage />} />
-            <Route path="/rules" element={<RulesPage />} />
-            <Route path="/pets" element={<PetsPage />} />
-            <Route path="/rankings" element={<RankingsPage />} />
-            <Route path="/pets/feed" element={<PetFeedingPage />} />
-            <Route path="/discover" element={<DiscoverPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/help" element={<HelpPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="*" element={<DashboardPage />} />
-          </Routes>
+          <Outlet />
         </main>
       </div>
     </div>

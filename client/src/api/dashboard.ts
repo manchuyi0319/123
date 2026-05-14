@@ -12,9 +12,9 @@ export function fetchDashboardStats(scope?: string): Promise<DashboardStats> {
   return apiRequest<DashboardStats>(`/dashboard/stats${query}`);
 }
 
-export function fetchWeeklyTop5(scope?: string): Promise<{ data: any[] }> {
+export function fetchWeeklyTop10(scope?: string): Promise<{ data: any[] }> {
   const query = scope === 'all' ? '?scope=all' : '';
-  return apiRequest(`/dashboard/weekly-top5${query}`);
+  return apiRequest(`/dashboard/weekly-top10${query}`);
 }
 
 export function fetchRecentPets(scope?: string): Promise<{ data: any[] }> {

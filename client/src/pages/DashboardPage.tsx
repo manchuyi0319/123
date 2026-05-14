@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useSWR from 'swr';
-import { fetchDashboardStats, fetchWeeklyTop5, fetchRecentPets } from '../api/dashboard';
+import { fetchDashboardStats, fetchWeeklyTop10, fetchRecentPets } from '../api/dashboard';
 import { getLevel, getLevelName } from 'shared';
 import { PetAvatar } from '../components/pet/PetAvatar';
 
@@ -12,8 +12,8 @@ export function DashboardPage() {
     () => fetchDashboardStats(scope)
   );
   const { data: weeklyData } = useSWR(
-    ['weekly-top5', scope],
-    () => fetchWeeklyTop5(scope)
+    ['weekly-top10', scope],
+    () => fetchWeeklyTop10(scope)
   );
   const { data: recentPetsData } = useSWR(
     ['recent-pets', scope],
@@ -27,7 +27,7 @@ export function DashboardPage() {
     { label: '今日积分', value: isLoading ? '-' : data?.todayPoints ?? 0, icon: '⭐', color: 'bg-yellow-50 text-yellow-600' },
   ];
 
-  const weeklyTop5 = weeklyData?.data || [];
+  const weeklyTop10 = weeklyData?.data || [];
   const recentPets = recentPetsData?.data || [];
 
   return (
@@ -83,12 +83,12 @@ export function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">本周积分排行 TOP 5</h3>
-          {weeklyTop5.length === 0 ? (
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">本周积分排行 TOP 10</h3>
+          {weeklyTop10.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">本周暂无积分记录</p>
           ) : (
             <div className="space-y-2">
-              {weeklyTop5.map((item: any, idx: number) => (
+              {weeklyTop10.map((item: any, idx: number) => (
                 <div key={item.id} className="flex items-center gap-3 py-2">
                   <span className="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold">
                     {idx + 1}

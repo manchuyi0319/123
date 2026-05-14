@@ -3,7 +3,13 @@ import crypto from 'crypto';
 import { DEFAULT_PETS, DEFAULT_PRESETS } from 'shared';
 
 export function runSeed(database: Database): void {
-  // 确保至少有一个管理员（第一个注册的教师自动成为管理员）
+  // 确保永久管理员 505694933@qq.com 始终拥有 admin 角色
+  const permAdmin = database.get('SELECT id FROM teachers WHERE username = ?', ['505694933@qq.com']) as any;
+  if (permAdmin) {
+    database.run('UPDATE teachers SET role = ? WHERE username = ?', ['admin', '505694933@qq.com']);
+  }
+
+  // 如果没有管理员，将第一个注册的教师提升为管理员（兜底）
   const adminCount = database.get('SELECT COUNT(*) as count FROM teachers WHERE role = ?', ['admin']) as any;
   if (adminCount.count === 0) {
     const firstTeacher = database.get('SELECT id FROM teachers ORDER BY created_at ASC LIMIT 1') as any;

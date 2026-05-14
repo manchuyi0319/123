@@ -43,12 +43,12 @@ router.get('/stats', authMiddleware, (req: AuthRequest, res: Response) => {
   });
 });
 
-// 本周积分 Top 5
-router.get('/weekly-top5', authMiddleware, (req: AuthRequest, res: Response) => {
+// 本周积分 Top 10
+router.get('/weekly-top10', authMiddleware, (req: AuthRequest, res: Response) => {
   const db = getDb();
   const global = isGlobal(req);
 
-  const top5 = db.all(
+  const top10 = db.all(
     `SELECT s.id, s.name, c.name AS class_name,
             COALESCE(SUM(pr.points_change), 0) AS weekly_points
      FROM point_records pr
@@ -59,11 +59,11 @@ router.get('/weekly-top5', authMiddleware, (req: AuthRequest, res: Response) => 
        ${global ? '' : 'AND pr.teacher_id = ?'}
      GROUP BY s.id
      ORDER BY weekly_points DESC
-     LIMIT 5`,
+     LIMIT 10`,
     global ? [] : [req.teacherId]
   );
 
-  res.json({ data: top5 });
+  res.json({ data: top10 });
 });
 
 // 最新领养宠物
@@ -83,7 +83,7 @@ router.get('/recent-pets', authMiddleware, (req: AuthRequest, res: Response) => 
      WHERE sp.is_active = 1 AND s.is_active = 1 AND c.is_archived = 0
        ${global ? '' : 'AND c.teacher_id = ?'}
      ORDER BY sp.hatched_at DESC
-     LIMIT 5`,
+     LIMIT 10`,
     global ? [] : [req.teacherId]
   );
 
