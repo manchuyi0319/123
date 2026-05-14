@@ -3,6 +3,7 @@ export interface Teacher {
   username: string;
   display_name: string;
   avatar_url: string | null;
+  role: 'admin' | 'teacher';
   created_at: string;
 }
 

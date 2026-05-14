@@ -3,6 +3,16 @@ import crypto from 'crypto';
 import { DEFAULT_PETS, DEFAULT_PRESETS } from 'shared';
 
 export function runSeed(database: Database): void {
+  // 确保至少有一个管理员（第一个注册的教师自动成为管理员）
+  const adminCount = database.get('SELECT COUNT(*) as count FROM teachers WHERE role = ?', ['admin']) as any;
+  if (adminCount.count === 0) {
+    const firstTeacher = database.get('SELECT id FROM teachers ORDER BY created_at ASC LIMIT 1') as any;
+    if (firstTeacher) {
+      database.run('UPDATE teachers SET role = ? WHERE id = ?', ['admin', firstTeacher.id]);
+      console.log('  Seed: promoted first teacher to admin');
+    }
+  }
+
   const result = database.get('SELECT COUNT(*) as count FROM pets');
   if ((result as any).count > 0) return;
 

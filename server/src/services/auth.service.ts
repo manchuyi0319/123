@@ -19,7 +19,7 @@ export const authService = {
     const passwordHash = bcrypt.hashSync(password, 12);
     const id = crypto.randomUUID();
     const teacher = teacherRepo.create(id, username, passwordHash, displayName);
-    const token = signToken(id);
+    const token = signToken(id, teacher.role);
 
     return { token, teacher };
   },
@@ -35,7 +35,7 @@ export const authService = {
       throw new UnauthorizedError('用户名或密码错误');
     }
 
-    const token = signToken(row.id);
+    const token = signToken(row.id, row.role);
     const { password_hash, updated_at, ...teacher } = row;
     return { token, teacher };
   },

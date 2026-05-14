@@ -3,6 +3,7 @@ import { verifyToken } from '../utils/jwt';
 
 export interface AuthRequest extends Request {
   teacherId?: string;
+  teacherRole?: string;
 }
 
 export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction): void {
@@ -15,6 +16,7 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
   try {
     const payload = verifyToken(authHeader.slice(7));
     req.teacherId = payload.teacherId;
+    req.teacherRole = payload.role || 'teacher';
     next();
   } catch {
     res.status(401).json({ error: '登录已过期，请重新登录' });
