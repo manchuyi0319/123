@@ -14,7 +14,13 @@ import discoverRoutes from './routes/discover.routes';
 
 const app = express();
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://127.0.0.1:5173'] }));
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    /\.vercel\.app$/,
+  ],
+}));
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => {

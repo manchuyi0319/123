@@ -1,0 +1,10 @@
+{
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "npm install"
+  },
+  "deploy": {
+    "startCommand": "npx tsx server/src/index.ts",
+    "healthcheckPath": "/api/health"
+  }
+}
