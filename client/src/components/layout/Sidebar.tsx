@@ -7,6 +7,7 @@ const navItems = [
   { to: '/shop', label: '宠物商城', icon: '🛒' },
   { to: '/pets/feed', label: '宠物喂养', icon: '🍖' },
   { to: '/wallet', label: '金币钱包', icon: '🪙' },
+  { to: '/quiz', label: '竞赛闯关', icon: '⚔️' },
   { to: '/rankings', label: '排行榜', icon: '🏆' },
   { to: '/discover', label: '发现班级', icon: '🔍' },
   { to: '/rules', label: '评价规则', icon: '📋' },

@@ -138,6 +138,47 @@ export interface CoinRecord {
   created_at: string;
 }
 
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string;
+  answer: number;
+  explanation: string | null;
+  grade: number;
+  subject: 'math' | 'chinese' | 'science' | 'fun' | 'riddle';
+  difficulty: number;
+}
+
+export interface QuizRecord {
+  id: string;
+  student_id: string;
+  teacher_id: string;
+  question_id: string;
+  selected_answer: number;
+  is_correct: number;
+  level: number;
+  created_at: string;
+}
+
+export interface QuizDailyStats {
+  id: string;
+  student_id: string;
+  date: string;
+  questions_answered: number;
+  questions_correct: number;
+  questions_wrong: number;
+  levels_gained: number;
+  points_earned: number;
+}
+
+export interface QuizStatus {
+  quiz_level: number;
+  today_wrong: number;
+  max_daily_wrong: number;
+  remaining: number;
+  questions_answered_today: number;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;

@@ -1,6 +1,7 @@
 import { Database } from './connection';
 import crypto from 'crypto';
 import { DEFAULT_PETS, DEFAULT_PRESETS } from 'shared';
+import { generateAllQuestions, QuizQuestionInput } from './quiz-seed';
 
 export function runSeed(database: Database): void {
   // 确保永久管理员 505694933@qq.com 始终拥有 admin 角色
@@ -56,6 +57,26 @@ export function runSeed(database: Database): void {
         [crypto.randomUUID(), rule.name, rule.description, rule.points_value, rule.category, rule.icon, rule.sort_order]
       );
     }
+  }
+
+  // 同步竞赛题库
+  const quizCount = database.get('SELECT COUNT(*) as count FROM quiz_questions') as any;
+  if (quizCount.count === 0) {
+    const questions = generateAllQuestions();
+    console.log(`  Seed: inserting ${questions.length} quiz questions...`);
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      try {
+        database.run(
+          'INSERT INTO quiz_questions (id, question, options, answer, explanation, grade, subject, difficulty) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [crypto.randomUUID(), q.question, JSON.stringify(q.options), q.answer, q.explanation, q.grade, q.subject, q.difficulty]
+        );
+      } catch (err: any) {
+        console.error(`  Seed: failed to insert quiz question #${i}: ${err.message}`);
+        throw err;
+      }
+    }
+    console.log(`  Seed: ${questions.length} quiz questions inserted`);
   }
 
   console.log(`  Seed: ${DEFAULT_PETS.length} pets, ${DEFAULT_PRESETS.length} evaluation rules`);

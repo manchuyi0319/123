@@ -15,6 +15,7 @@ import { AdminPage } from './pages/AdminPage';
 import { DiscoverPage } from './pages/DiscoverPage';
 import { PetFeedingPage } from './pages/PetFeedingPage';
 import { HelpPage } from './pages/HelpPage';
+import { QuizPage } from './pages/QuizPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ParentDashboardPage } from './pages/parent/ParentDashboardPage';
 import { ParentChildDetailPage } from './pages/parent/ParentChildDetailPage';
@@ -39,6 +40,7 @@ function App() {
             <Route path="discover" element={<DiscoverPage />} />
             <Route path="admin" element={<AdminPage />} />
             <Route path="help" element={<HelpPage />} />
+            <Route path="quiz" element={<QuizPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="*" element={<DashboardPage />} />
           </Route>
@@ -46,6 +48,7 @@ function App() {
             <Route path="parent/dashboard" element={<ParentDashboardPage />} />
             <Route path="parent/children/:id" element={<ParentChildDetailPage />} />
             <Route path="parent/link" element={<LinkChildPage />} />
+            <Route path="parent/quiz" element={<QuizPage />} />
           </Route>
         </Routes>
       </AuthProvider>
