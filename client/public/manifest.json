@@ -1,0 +1,22 @@
+{
+  "name": "我的老师我的班",
+  "short_name": "我的老师我的班",
+  "description": "游戏化班级管理工具 - 积分评价与宠物养成",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#4f46e5",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

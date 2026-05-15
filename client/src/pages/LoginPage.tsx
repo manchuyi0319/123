@@ -40,9 +40,9 @@ export function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🐱</div>
-          <h1 className="text-3xl font-bold text-gray-800">班级宠物园</h1>
-          <p className="text-gray-500 mt-2">游戏化班级管理工具</p>
+          <div className="text-6xl mb-4">📚</div>
+          <h1 className="text-3xl font-bold text-gray-800">我的老师我的班</h1>
+          <p className="text-gray-500 mt-2">游戏化班级管理与宠物养成</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-8">

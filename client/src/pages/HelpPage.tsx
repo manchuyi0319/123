@@ -45,7 +45,7 @@ export function HelpPage() {
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-800 mb-2">操作说明</h2>
-      <p className="text-sm text-gray-400 mb-6">快速了解班级宠物园的使用方法</p>
+      <p className="text-sm text-gray-400 mb-6">快速了解「我的老师我的班」的使用方法</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {STEPS.map(step => (
