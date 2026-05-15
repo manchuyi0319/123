@@ -1,4 +1,5 @@
 import { Router, Response } from 'express';
+import crypto from 'crypto';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 import { getDb } from '../database/connection';
 
@@ -63,7 +64,7 @@ router.post('/wallet/redeem', (req: AuthRequest, res: Response) => {
   db.run('UPDATE teachers SET coins = coins + ? WHERE id = ?', [rechargeCode.coins, req.teacherId]);
 
   // 记录流水
-  const coinRecordId = require('crypto').randomUUID();
+  const coinRecordId = crypto.randomUUID();
   db.run(
     'INSERT INTO coin_records (id, user_id, amount, reason) VALUES (?, ?, ?, ?)',
     [coinRecordId, req.teacherId, rechargeCode.coins, `兑换充值码 +${rechargeCode.coins} 金币`]
