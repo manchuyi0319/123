@@ -8,6 +8,7 @@ export interface Teacher {
   bio: string | null;
   school: string | null;
   role: 'admin' | 'teacher' | 'parent';
+  coins: number;
   created_at: string;
 }
 
@@ -64,6 +65,8 @@ export interface Pet {
   description: string | null;
   emoji: string;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  price: number;
+  image_url: string | null;
   sort_order: number;
 }
 
@@ -102,6 +105,37 @@ export interface EvaluationRule {
   icon: string | null;
   is_preset: number;
   sort_order: number;
+}
+
+export interface PaymentOrder {
+  id: string;
+  user_id: string;
+  amount: number;
+  coins: number;
+  status: 'pending' | 'completed' | 'failed';
+  payment_method: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RechargeCode {
+  id: string;
+  code: string;
+  coins: number;
+  created_by: string;
+  used_by: string | null;
+  is_used: number;
+  created_at: string;
+  used_at: string | null;
+}
+
+export interface CoinRecord {
+  id: string;
+  user_id: string;
+  amount: number;
+  reason: string;
+  related_order_id: string | null;
+  created_at: string;
 }
 
 export interface LoginRequest {

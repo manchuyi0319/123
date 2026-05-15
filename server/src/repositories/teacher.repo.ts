@@ -12,7 +12,7 @@ export const teacherRepo = {
   },
 
   findById(id: string): Teacher | undefined {
-    return getDb().get('SELECT id, username, display_name, avatar_url, email, phone, bio, school, role, created_at FROM teachers WHERE id = ?', [id]) as Teacher | undefined;
+    return getDb().get('SELECT id, username, display_name, avatar_url, email, phone, bio, school, role, coins, created_at FROM teachers WHERE id = ?', [id]) as Teacher | undefined;
   },
 
   findByIdWithPassword(id: string): TeacherRow | undefined {

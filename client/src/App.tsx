@@ -8,6 +8,8 @@ import { ClassesPage } from './pages/ClassesPage';
 import { StudentsPage } from './pages/StudentsPage';
 import { RulesPage } from './pages/RulesPage';
 import { PetsPage } from './pages/PetsPage';
+import { PetShopPage } from './pages/PetShopPage';
+import { WalletPage } from './pages/WalletPage';
 import { RankingsPage } from './pages/RankingsPage';
 import { AdminPage } from './pages/AdminPage';
 import { DiscoverPage } from './pages/DiscoverPage';
@@ -30,6 +32,8 @@ function App() {
             <Route path="students" element={<StudentsPage />} />
             <Route path="rules" element={<RulesPage />} />
             <Route path="pets" element={<PetsPage />} />
+            <Route path="shop" element={<PetShopPage />} />
+            <Route path="wallet" element={<WalletPage />} />
             <Route path="rankings" element={<RankingsPage />} />
             <Route path="pets/feed" element={<PetFeedingPage />} />
             <Route path="discover" element={<DiscoverPage />} />

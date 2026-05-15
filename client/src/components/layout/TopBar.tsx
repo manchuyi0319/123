@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import useSWR from 'swr';
+import { fetchWallet } from '../../api/shop';
 
 export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
   const { teacher, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { data: walletData } = useSWR('wallet', fetchWallet);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -17,6 +20,8 @@ export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  const coins = walletData?.coins ?? 0;
+
   return (
     <header className="bg-white border-b border-gray-200 px-4 md:px-6 py-3 flex items-center justify-between">
       <button
@@ -27,7 +32,12 @@ export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <div className="flex-1" />
+      <div className="flex-1 flex items-center gap-4">
+        <Link to="/wallet" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full hover:bg-amber-100 transition-colors">
+          <span className="text-base">🪙</span>
+          <span className="text-sm font-bold text-amber-700">{coins}</span>
+        </Link>
+      </div>
       <div className="relative" ref={ref}>
         <button
           onClick={() => setOpen(!open)}

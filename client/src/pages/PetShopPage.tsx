@@ -1,26 +1,26 @@
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { fetchPets, adoptPet } from '../api/pets';
+import { fetchShopPets, fetchWallet } from '../api/shop';
+import { adoptPet } from '../api/pets';
 import { fetchClasses } from '../api/classes';
 import { fetchStudents } from '../api/students';
-import { fetchWallet } from '../api/shop';
 import { RARITY_LABELS, RARITY_COLORS, MAX_ADOPTION } from 'shared';
 import { PetAvatar } from '../components/pet/PetAvatar';
 import { Link } from 'react-router-dom';
 
 const RARITY_ORDER = ['legendary', 'epic', 'rare', 'common'];
 
-export function PetsPage() {
-  const { data: petsData, error, isLoading } = useSWR('pets', fetchPets);
-  const { data: walletData } = useSWR('wallet', fetchWallet);
-  const { data: classesData } = useSWR('classes', fetchClasses);
+export function PetShopPage() {
+  const { data: petsData, error, isLoading } = useSWR('shop-pets', fetchShopPets);
+  const { data: walletData, mutate: mutateWallet } = useSWR('wallet', fetchWallet);
+  const { data: classesData } = useSWR('shop-classes', fetchClasses);
   const [selectedClassId, setSelectedClassId] = useState('');
   const { data: studentsData } = useSWR(
-    selectedClassId ? ['students', selectedClassId] : null,
+    selectedClassId ? ['shop-students', selectedClassId] : null,
     () => fetchStudents(selectedClassId)
   );
 
-  const [showAdoptModal, setShowAdoptModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [selectedPet, setSelectedPet] = useState<any>(null);
   const [adoptStudentId, setAdoptStudentId] = useState('');
   const [adoptNickname, setAdoptNickname] = useState('');
@@ -28,6 +28,7 @@ export function PetsPage() {
   const [adopting, setAdopting] = useState(false);
 
   const pets = petsData?.data || [];
+  const coins = walletData?.coins || 0;
   const classes = classesData?.data || [];
   const students = studentsData?.data || [];
 
@@ -37,15 +38,15 @@ export function PetsPage() {
     pets: pets.filter((p: any) => p.rarity === rarity),
   })).filter(g => g.pets.length > 0);
 
-  const openAdopt = (pet: any) => {
+  const openBuy = (pet: any) => {
     setSelectedPet(pet);
     setAdoptStudentId('');
     setAdoptNickname('');
     setAdoptError('');
-    setShowAdoptModal(true);
+    setShowModal(true);
   };
 
-  const handleAdopt = async () => {
+  const handleBuy = async () => {
     if (!adoptStudentId) { setAdoptError('请选择学生'); return; }
     setAdopting(true); setAdoptError('');
     try {
@@ -54,24 +55,18 @@ export function PetsPage() {
         pet_id: selectedPet.id,
         nickname: adoptNickname.trim() || undefined,
       });
-      setShowAdoptModal(false);
-      mutate('pets');
+      setShowModal(false);
+      mutate('shop-pets');
+      mutateWallet();
     } catch (err: any) {
-      setAdoptError(err.message || '领养失败');
+      setAdoptError(err.message || '购买失败');
     } finally { setAdopting(false); }
   };
-
-  const adoptedCount = (petId: string) => {
-    // Static display - actual adoption check is server-side
-    return null;
-  };
-
-  const coins = walletData?.coins || 0;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-2xl font-bold text-gray-800">宠物图鉴</h2>
+        <h2 className="text-2xl font-bold text-gray-800">宠物商城</h2>
         <Link to="/wallet" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 transition-colors">
           <span className="text-xl">🪙</span>
           <span className="text-sm font-bold text-amber-700">{coins}</span>
@@ -90,7 +85,7 @@ export function PetsPage() {
             <h3 className="text-sm font-medium text-gray-500 uppercase mb-3">{group.label} ({group.pets.length} 种)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {group.pets.map((pet: any) => (
-                <div key={pet.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+                <div key={pet.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                   <div className="text-center mb-3 flex justify-center">
                     <PetAvatar emoji={pet.emoji} rarity={pet.rarity} size="lg" />
                   </div>
@@ -98,7 +93,7 @@ export function PetsPage() {
                   <p className="text-xs text-gray-400 text-center mb-3">{pet.species} · {RARITY_LABELS[pet.rarity]}</p>
                   <p className="text-xs text-gray-500 text-center line-clamp-2 mb-4">{pet.description}</p>
                   <button
-                    onClick={() => openAdopt(pet)}
+                    onClick={() => openBuy(pet)}
                     disabled={pet.price > 0 && coins < pet.price}
                     className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
                       pet.price === 0
@@ -108,7 +103,7 @@ export function PetsPage() {
                           : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     }`}
                   >
-                    {pet.price === 0 ? '🎁 免费领养' : coins >= pet.price ? `🪙 ${pet.price} 金币领养` : `🔒 ${pet.price} 金币`}
+                    {pet.price === 0 ? '🎁 免费领养' : coins >= pet.price ? `🪙 ${pet.price} 金币购买` : `🔒 ${pet.price} 金币`}
                   </button>
                 </div>
               ))}
@@ -117,13 +112,12 @@ export function PetsPage() {
         ))
       )}
 
-      {/* 领养弹窗 */}
-      {showAdoptModal && selectedPet && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAdoptModal(false)}>
+      {showModal && selectedPet && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="text-center mb-4">
               <span className="text-5xl">{selectedPet.emoji}</span>
-              <h3 className="text-lg font-semibold mt-2">领养 {selectedPet.name}</h3>
+              <h3 className="text-lg font-semibold mt-2">{selectedPet.price === 0 ? '领养' : '购买'} {selectedPet.name}</h3>
               <p className="text-sm text-gray-400">
                 {RARITY_LABELS[selectedPet.rarity]}
                 {selectedPet.price > 0 ? ` · 🪙 ${selectedPet.price} 金币` : ' · 🎁 免费'}
@@ -157,6 +151,7 @@ export function PetsPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="给你的宠物起个名字" />
               </div>
             </div>
+
             {selectedPet.price > 0 && (
               <div className="mt-3 p-2.5 bg-amber-50 rounded-lg text-xs text-amber-700">
                 当前金币余额：<span className="font-bold">{coins}</span>
@@ -167,10 +162,10 @@ export function PetsPage() {
             )}
 
             <div className="flex gap-3 mt-5">
-              <button onClick={() => setShowAdoptModal(false)} className="flex-1 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">取消</button>
-              <button onClick={handleAdopt} disabled={adopting || (selectedPet.price > 0 && coins < selectedPet.price)}
+              <button onClick={() => setShowModal(false)} className="flex-1 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">取消</button>
+              <button onClick={handleBuy} disabled={adopting || (selectedPet.price > 0 && coins < selectedPet.price)}
                 className="flex-1 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors text-sm font-medium">
-                {adopting ? '领养中...' : '确认领养'}
+                {adopting ? '处理中...' : selectedPet.price === 0 ? '确认领养' : '确认购买'}
               </button>
             </div>
           </div>

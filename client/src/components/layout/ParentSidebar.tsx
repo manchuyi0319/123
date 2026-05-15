@@ -4,7 +4,8 @@ const navItems = [
   { to: '/parent/dashboard', label: '家长中心', icon: '🏠' },
   { to: '/parent/link', label: '关联孩子', icon: '🔗' },
   { to: '/rankings', label: '排行榜', icon: '🏆' },
-  { to: '/pets', label: '宠物图鉴', icon: '🐾' },
+  { to: '/shop', label: '宠物商城', icon: '🛒' },
+  { to: '/wallet', label: '金币钱包', icon: '🪙' },
   { to: '/help', label: '帮助', icon: '📖' },
 ];
 
