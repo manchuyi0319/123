@@ -7,8 +7,30 @@ export interface Teacher {
   phone: string | null;
   bio: string | null;
   school: string | null;
-  role: 'admin' | 'teacher';
+  role: 'admin' | 'teacher' | 'parent';
   created_at: string;
+}
+
+export interface JoinRequest {
+  id: string;
+  parent_id: string;
+  student_id: string;
+  class_id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  message: string | null;
+  created_at: string;
+  updated_at: string;
+  parent_name?: string;
+  student_name?: string;
+  class_name?: string;
+}
+
+export interface ParentStudent {
+  id: string;
+  parent_id: string;
+  student_id: string;
+  created_at: string;
+  student?: Student;
 }
 
 export interface Class {

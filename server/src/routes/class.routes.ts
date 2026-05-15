@@ -84,6 +84,33 @@ router.patch('/:id', validate(updateClassSchema), (req: AuthRequest, res: Respon
   res.json(updated);
 });
 
+// 生成/刷新班级邀请码
+router.post('/:id/invite-code', (req: AuthRequest, res: Response) => {
+  const db = getDb();
+  const class_ = db.get(
+    'SELECT * FROM classes WHERE id = ? AND teacher_id = ?',
+    [req.params.id, req.teacherId]
+  );
+  if (!class_) {
+    res.status(404).json({ error: '班级不存在' });
+    return;
+  }
+
+  // 生成6位随机大写字母数字邀请码
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  db.run(
+    "UPDATE classes SET invite_code = ?, updated_at = datetime('now') WHERE id = ?",
+    [code, req.params.id]
+  );
+
+  res.json({ invite_code: code });
+});
+
 // 归档班级（软删除）
 router.delete('/:id', (req: AuthRequest, res: Response) => {
   const db = getDb();

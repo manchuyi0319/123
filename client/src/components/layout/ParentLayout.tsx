@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Sidebar } from './Sidebar';
+import { ParentSidebar } from './ParentSidebar';
 import { TopBar } from './TopBar';
 
-export function Layout() {
+export function ParentLayout() {
   const { isAuthenticated, isLoading, teacher } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -20,14 +20,12 @@ export function Layout() {
     return <Navigate to="/login" replace />;
   }
 
-  // 家长用户重定向到家长端
-  if (teacher?.role === 'parent') {
-    return <Navigate to="/parent/dashboard" replace />;
+  if (teacher?.role !== 'parent') {
+    return <Navigate to="/" replace />;
   }
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -35,13 +33,12 @@ export function Layout() {
         />
       )}
 
-      {/* Sidebar: hidden on mobile, shown as overlay when open */}
       <div className={`
         fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200
         md:relative md:translate-x-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <Sidebar onClose={() => setSidebarOpen(false)} />
+        <ParentSidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">

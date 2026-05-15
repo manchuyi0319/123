@@ -12,6 +12,8 @@ import petRoutes from './routes/pet.routes';
 import rankingsRoutes from './routes/rankings.routes';
 import adminRoutes from './routes/admin.routes';
 import discoverRoutes from './routes/discover.routes';
+import parentRoutes from './routes/parent.routes';
+import joinRequestRoutes from './routes/join-request.routes';
 
 const app = express();
 
@@ -38,6 +40,8 @@ app.use('/api/pets', petRoutes);
 app.use('/api/rankings', rankingsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/discover', discoverRoutes);
+app.use('/api/parent', parentRoutes);
+app.use('/api/join-requests', joinRequestRoutes);
 
 // 生产环境：托管前端静态文件
 const distPath = path.resolve(__dirname, '../../client/dist');

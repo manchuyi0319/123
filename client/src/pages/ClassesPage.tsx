@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { fetchClasses, createClass, updateClass, archiveClass } from '../api/classes';
+import { fetchClasses, createClass, updateClass, archiveClass, generateInviteCode } from '../api/classes';
 
 interface ClassForm {
   name: string;
@@ -18,6 +18,23 @@ export function ClassesPage() {
   const [form, setForm] = useState<ClassForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
+  const [generatingCode, setGeneratingCode] = useState('');
+  const [copiedCode, setCopiedCode] = useState('');
+
+  const handleGenerateCode = async (id: string) => {
+    setGeneratingCode(id);
+    try {
+      const res = await generateInviteCode(id);
+      mutate('classes');
+      setCopiedCode(res.invite_code);
+      await navigator.clipboard.writeText(res.invite_code);
+      setTimeout(() => setCopiedCode(''), 2000);
+    } catch (err: any) {
+      alert(err.message || '生成失败');
+    } finally {
+      setGeneratingCode('');
+    }
+  };
 
   const openCreate = () => {
     setEditingId(null);
@@ -106,8 +123,33 @@ export function ClassesPage() {
                 </span>
               </div>
               {cls.description && (
-                <p className="text-sm text-gray-500 mb-4 line-clamp-2">{cls.description}</p>
+                <p className="text-sm text-gray-500 mb-2 line-clamp-2">{cls.description}</p>
               )}
+
+              {/* 邀请码 */}
+              <div className="mb-3 p-2.5 bg-amber-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-amber-600 font-medium">家长邀请码：</span>
+                  {cls.invite_code ? (
+                    <span className="text-sm font-bold text-amber-800 tracking-widest">
+                      {cls.invite_code}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-amber-400">未生成</span>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleGenerateCode(cls.id)}
+                  disabled={generatingCode === cls.id}
+                  className="mt-1.5 w-full py-1 text-xs text-amber-700 bg-amber-100 rounded hover:bg-amber-200 disabled:opacity-40 transition-colors"
+                >
+                  {generatingCode === cls.id ? '生成中...' : cls.invite_code ? '重新生成并复制' : '生成邀请码'}
+                </button>
+                {copiedCode && copiedCode === cls.invite_code && (
+                  <p className="text-xs text-green-600 mt-1">已复制到剪贴板！</p>
+                )}
+              </div>
+
               <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50">
                 <button
                   onClick={() => openEdit(cls)}

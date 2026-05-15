@@ -9,6 +9,7 @@ interface AuthState {
   login: (data: { email: string; password: string }) => Promise<void>;
   register: (data: { email: string; password: string; display_name: string }) => Promise<void>;
   logout: () => void;
+  setTeacherDirect: (teacher: Teacher) => void;
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -49,6 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTeacher(null);
   };
 
+  const setTeacherDirect = (t: Teacher) => setTeacher(t);
+
   return (
     <AuthContext.Provider
       value={{
@@ -58,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        setTeacherDirect,
       }}
     >
       {children}

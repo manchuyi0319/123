@@ -6,6 +6,7 @@ import { fetchStudents, addStudent, batchAddStudents, updateStudent, deactivateS
 import { fetchRules } from '../api/rules';
 import { addPoints, fetchStudentPoints } from '../api/points';
 import { fetchStudentPets, feedPet } from '../api/pets';
+import { fetchJoinRequests, approveJoinRequest, rejectJoinRequest } from '../api/join-requests';
 import { getLevel, getLevelName, getLevelProgress, getExpToNextLevel, LEVEL_COLORS } from 'shared';
 
 export function StudentsPage() {
@@ -53,6 +54,34 @@ export function StudentsPage() {
 
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
+
+  // 家长审批
+  const [showApproval, setShowApproval] = useState(false);
+  const { data: joinRequestsData, mutate: mutateJoinRequests } = useSWR(
+    selectedClassId ? ['join-requests', selectedClassId] : null,
+    () => fetchJoinRequests({ class_id: selectedClassId, status: 'pending' })
+  );
+  const pendingCount = joinRequestsData?.data?.length || 0;
+  const [approvingId, setApprovingId] = useState('');
+
+  const handleApprove = async (id: string) => {
+    setApprovingId(id);
+    try {
+      await approveJoinRequest(id);
+      mutateJoinRequests();
+      mutate(['students', selectedClassId]);
+    } catch (err: any) { alert(err.message || '操作失败'); }
+    finally { setApprovingId(''); }
+  };
+
+  const handleReject = async (id: string) => {
+    setApprovingId(id);
+    try {
+      await rejectJoinRequest(id);
+      mutateJoinRequests();
+    } catch (err: any) { alert(err.message || '操作失败'); }
+    finally { setApprovingId(''); }
+  };
 
   const classes = classesData?.data || [];
   const rules = rulesData?.data || [];
@@ -159,6 +188,17 @@ export function StudentsPage() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800">学生管理</h2>
         <div className="flex gap-2">
+          {selectedClassId && (
+            <button onClick={() => setShowApproval(true)}
+              className="px-3 py-2 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium relative">
+              家长申请
+              {pendingCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                  {pendingCount}
+                </span>
+              )}
+            </button>
+          )}
           <button onClick={() => { resetForm(); setShowBatchModal(true); }} disabled={!selectedClassId}
             className="px-3 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium disabled:opacity-40">
             批量导入
@@ -456,6 +496,82 @@ export function StudentsPage() {
               </div>
             )}
             <button onClick={() => setShowHistory(false)} className="mt-4 w-full py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">关闭</button>
+          </div>
+        </div>
+      )}
+
+      {/* 家长申请审批弹窗 */}
+      {showApproval && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowApproval(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold mb-1">家长加入审批</h3>
+            <p className="text-sm text-gray-400 mb-4">
+              {pendingCount > 0 ? `${pendingCount} 条待处理申请` : '暂无待审批申请'}
+            </p>
+
+            {!joinRequestsData ? (
+              <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" /></div>
+            ) : joinRequestsData.data.length === 0 ? (
+              <div className="text-center py-10 text-gray-400">
+                <span className="text-4xl">✅</span>
+                <p className="mt-2">没有待审批的家长申请</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {joinRequestsData.data.map((jr: any) => (
+                  <div key={jr.id} className="bg-gray-50 rounded-xl p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          {jr.parent_name || '家长'}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {jr.parent_email} {jr.parent_phone ? `· ${jr.parent_phone}` : ''}
+                        </p>
+                      </div>
+                      <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
+                        待审批
+                      </span>
+                    </div>
+                    <div className="mb-2 p-2 bg-white rounded-lg">
+                      <p className="text-sm text-gray-700">
+                        申请关联学生：<strong>{jr.student_name}</strong>
+                        <span className="text-xs text-gray-400 ml-1">({jr.class_name})</span>
+                      </p>
+                      {jr.message && (
+                        <p className="text-xs text-gray-500 mt-1">留言：{jr.message}</p>
+                      )}
+                      <p className="text-xs text-gray-400 mt-1">
+                        申请时间：{jr.created_at?.replace('T', ' ').substring(0, 16)}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleApprove(jr.id)}
+                        disabled={approvingId === jr.id}
+                        className="flex-1 py-1.5 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-40 transition-colors text-xs font-medium"
+                      >
+                        {approvingId === jr.id ? '处理中...' : '✅ 通过'}
+                      </button>
+                      <button
+                        onClick={() => handleReject(jr.id)}
+                        disabled={approvingId === jr.id}
+                        className="flex-1 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 disabled:opacity-40 transition-colors text-xs font-medium"
+                      >
+                        {approvingId === jr.id ? '处理中...' : '❌ 拒绝'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              onClick={() => setShowApproval(false)}
+              className="mt-4 w-full py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
+              关闭
+            </button>
           </div>
         </div>
       )}

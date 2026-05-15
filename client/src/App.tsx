@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { Layout } from './components/layout/Layout';
+import { ParentLayout } from './components/layout/ParentLayout';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ClassesPage } from './pages/ClassesPage';
@@ -13,6 +14,9 @@ import { DiscoverPage } from './pages/DiscoverPage';
 import { PetFeedingPage } from './pages/PetFeedingPage';
 import { HelpPage } from './pages/HelpPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ParentDashboardPage } from './pages/parent/ParentDashboardPage';
+import { ParentChildDetailPage } from './pages/parent/ParentChildDetailPage';
+import { LinkChildPage } from './pages/parent/LinkChildPage';
 
 function App() {
   return (
@@ -33,6 +37,11 @@ function App() {
             <Route path="help" element={<HelpPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="*" element={<DashboardPage />} />
+          </Route>
+          <Route element={<ParentLayout />}>
+            <Route path="parent/dashboard" element={<ParentDashboardPage />} />
+            <Route path="parent/children/:id" element={<ParentChildDetailPage />} />
+            <Route path="parent/link" element={<LinkChildPage />} />
           </Route>
         </Routes>
       </AuthProvider>

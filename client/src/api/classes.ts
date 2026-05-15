@@ -20,3 +20,7 @@ export function updateClass(id: string, data: { name?: string; grade?: string; s
 export function archiveClass(id: string): Promise<{ success: boolean }> {
   return apiRequest(`/classes/${id}`, { method: 'DELETE' });
 }
+
+export function generateInviteCode(id: string): Promise<{ invite_code: string }> {
+  return apiRequest(`/classes/${id}/invite-code`, { method: 'POST' });
+}
