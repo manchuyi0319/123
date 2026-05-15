@@ -12,6 +12,10 @@ const MAX_DAILY_WRONG = 3;
 
 function getToday(): string {
   const now = new Date();
+  // 每天上午9点重置，9点之前算前一天
+  if (now.getHours() < 9) {
+    now.setDate(now.getDate() - 1);
+  }
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 

@@ -202,6 +202,39 @@ export interface PaginatedResponse<T> {
   limit: number;
 }
 
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  created_by: string;
+  is_pinned: number;
+  author_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BulletinPost {
+  id: string;
+  author_id: string;
+  title: string;
+  content: string;
+  author_name?: string;
+  author_avatar?: string | null;
+  author_role?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SemesterReward {
+  id: string;
+  category: 'students' | 'pets' | 'classes';
+  rank_start: number;
+  rank_end: number;
+  reward: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ApiError {
   error: string;
   details?: unknown;

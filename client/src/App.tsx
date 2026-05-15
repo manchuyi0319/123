@@ -17,6 +17,9 @@ import { PetFeedingPage } from './pages/PetFeedingPage';
 import { HelpPage } from './pages/HelpPage';
 import { QuizPage } from './pages/QuizPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { AnnouncementsPage } from './pages/AnnouncementsPage';
+import { BulletinPage } from './pages/BulletinPage';
+import { SemesterPage } from './pages/SemesterPage';
 import { ParentDashboardPage } from './pages/parent/ParentDashboardPage';
 import { ParentChildDetailPage } from './pages/parent/ParentChildDetailPage';
 import { LinkChildPage } from './pages/parent/LinkChildPage';
@@ -41,6 +44,9 @@ function App() {
             <Route path="admin" element={<AdminPage />} />
             <Route path="help" element={<HelpPage />} />
             <Route path="quiz" element={<QuizPage />} />
+            <Route path="announcements" element={<AnnouncementsPage />} />
+            <Route path="bulletin" element={<BulletinPage />} />
+            <Route path="semester" element={<SemesterPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="*" element={<DashboardPage />} />
           </Route>

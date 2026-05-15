@@ -17,6 +17,9 @@ import joinRequestRoutes from './routes/join-request.routes';
 import shopRoutes from './routes/shop.routes';
 import rechargeCodeRoutes from './routes/recharge-code.routes';
 import quizRoutes from './routes/quiz.routes';
+import announcementRoutes from './routes/announcements.routes';
+import bulletinRoutes from './routes/bulletin.routes';
+import semesterRoutes from './routes/semester.routes';
 
 const app = express();
 
@@ -48,6 +51,9 @@ app.use('/api/join-requests', joinRequestRoutes);
 app.use('/api/shop', shopRoutes);
 app.use('/api/recharge-codes', rechargeCodeRoutes);
 app.use('/api/quiz', quizRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/bulletin', bulletinRoutes);
+app.use('/api/semester', semesterRoutes);
 
 // 生产环境：托管前端静态文件
 const distPath = path.resolve(__dirname, '../../client/dist');

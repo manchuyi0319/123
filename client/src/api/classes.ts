@@ -24,3 +24,7 @@ export function archiveClass(id: string): Promise<{ success: boolean }> {
 export function generateInviteCode(id: string): Promise<{ invite_code: string }> {
   return apiRequest(`/classes/${id}/invite-code`, { method: 'POST' });
 }
+
+export function promoteClass(id: string, newGrade: string): Promise<any> {
+  return apiRequest(`/classes/${id}/promote`, { method: 'POST', body: JSON.stringify({ new_grade: newGrade }) });
+}

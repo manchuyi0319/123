@@ -127,4 +127,41 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
   res.json({ success: true });
 });
 
+// 班级升学（升年级）
+router.post('/:id/promote', (req: AuthRequest, res: Response) => {
+  const db = getDb();
+  const class_ = db.get(
+    'SELECT * FROM classes WHERE id = ? AND teacher_id = ?',
+    [req.params.id, req.teacherId]
+  ) as any;
+
+  if (!class_) {
+    res.status(404).json({ error: '班级不存在' });
+    return;
+  }
+
+  const { new_grade } = req.body;
+  if (!new_grade || typeof new_grade !== 'string' || !new_grade.trim()) {
+    res.status(400).json({ error: '请输入新年级' });
+    return;
+  }
+
+  const fromGrade = class_.grade || '未知';
+
+  db.run(
+    "UPDATE classes SET grade = ?, updated_at = datetime('now') WHERE id = ?",
+    [new_grade.trim(), req.params.id]
+  );
+
+  // 记录升学历史
+  const id = crypto.randomUUID();
+  db.run(
+    'INSERT INTO class_promotions (id, class_id, teacher_id, from_grade, to_grade) VALUES (?, ?, ?, ?, ?)',
+    [id, req.params.id, req.teacherId, fromGrade, new_grade.trim()]
+  );
+
+  const updated = db.get('SELECT * FROM classes WHERE id = ?', [req.params.id]);
+  res.json({ ...updated, promoted_from: fromGrade, promoted_to: new_grade.trim() });
+});
+
 export default router;

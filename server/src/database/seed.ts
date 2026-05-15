@@ -79,5 +79,31 @@ export function runSeed(database: Database): void {
     console.log(`  Seed: ${questions.length} quiz questions inserted`);
   }
 
+  // 同步学期奖励默认配置
+  const rewardsCount = database.get('SELECT COUNT(*) as count FROM semester_rewards') as any;
+  if (rewardsCount.count === 0) {
+    const defaultRewards = [
+      { category: 'students', rank_start: 1, rank_end: 1, reward: '冠军奖品（待配置）' },
+      { category: 'students', rank_start: 2, rank_end: 2, reward: '亚军奖品（待配置）' },
+      { category: 'students', rank_start: 3, rank_end: 3, reward: '季军奖品（待配置）' },
+      { category: 'students', rank_start: 4, rank_end: 10, reward: '优秀奖（待配置）' },
+      { category: 'pets', rank_start: 1, rank_end: 1, reward: '冠军奖品（待配置）' },
+      { category: 'pets', rank_start: 2, rank_end: 2, reward: '亚军奖品（待配置）' },
+      { category: 'pets', rank_start: 3, rank_end: 3, reward: '季军奖品（待配置）' },
+      { category: 'pets', rank_start: 4, rank_end: 10, reward: '优秀奖（待配置）' },
+      { category: 'classes', rank_start: 1, rank_end: 1, reward: '冠军班级奖品（待配置）' },
+      { category: 'classes', rank_start: 2, rank_end: 2, reward: '亚军班级奖品（待配置）' },
+      { category: 'classes', rank_start: 3, rank_end: 3, reward: '季军班级奖品（待配置）' },
+      { category: 'classes', rank_start: 4, rank_end: 6, reward: '优秀班级奖（待配置）' },
+      { category: 'classes', rank_start: 7, rank_end: 10, reward: '鼓励奖（待配置）' },
+    ];
+    for (const r of defaultRewards) {
+      database.run(
+        'INSERT INTO semester_rewards (id, category, rank_start, rank_end, reward) VALUES (?, ?, ?, ?, ?)',
+        [crypto.randomUUID(), r.category, r.rank_start, r.rank_end, r.reward]
+      );
+    }
+  }
+
   console.log(`  Seed: ${DEFAULT_PETS.length} pets, ${DEFAULT_PRESETS.length} evaluation rules`);
 }

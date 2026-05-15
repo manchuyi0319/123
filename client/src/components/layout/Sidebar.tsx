@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 
 const navItems = [
   { to: '/', label: '仪表盘', icon: '📊' },
+  { to: '/announcements', label: '系统公告', icon: '📢' },
   { to: '/classes', label: '班级管理', icon: '🏫' },
   { to: '/students', label: '学生管理', icon: '👨‍🎓' },
   { to: '/shop', label: '宠物商城', icon: '🛒' },
@@ -9,7 +10,9 @@ const navItems = [
   { to: '/wallet', label: '金币钱包', icon: '🪙' },
   { to: '/quiz', label: '竞赛闯关', icon: '⚔️' },
   { to: '/rankings', label: '排行榜', icon: '🏆' },
+  { to: '/semester', label: '学期奖励', icon: '🏅' },
   { to: '/discover', label: '发现班级', icon: '🔍' },
+  { to: '/bulletin', label: '教师论坛', icon: '💬' },
   { to: '/rules', label: '评价规则', icon: '📋' },
   { to: '/admin', label: '后台管理', icon: '🔧' },
   { to: '/help', label: '操作说明', icon: '📖' },

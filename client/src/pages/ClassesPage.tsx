@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { fetchClasses, createClass, updateClass, archiveClass, generateInviteCode } from '../api/classes';
+import { fetchClasses, createClass, updateClass, archiveClass, generateInviteCode, promoteClass } from '../api/classes';
 
 interface ClassForm {
   name: string;
@@ -20,6 +20,43 @@ export function ClassesPage() {
   const [formError, setFormError] = useState('');
   const [generatingCode, setGeneratingCode] = useState('');
   const [copiedCode, setCopiedCode] = useState('');
+  const [promotingId, setPromotingId] = useState<string | null>(null);
+  const [promoteGrade, setPromoteGrade] = useState('');
+  const [promoting, setPromoting] = useState(false);
+
+  const suggestNextGrade = (grade: string): string => {
+    const map: Record<string, string> = {
+      '一年级': '二年级', '二年级': '三年级', '三年级': '四年级',
+      '四年级': '五年级', '五年级': '六年级', '六年级': '七年级',
+      '七年级': '八年级', '八年级': '九年级', '九年级': '毕业班',
+      '初一': '初二', '初二': '初三', '初三': '高一',
+      '高一': '高二', '高二': '高三',
+      '1年级': '2年级', '2年级': '3年级', '3年级': '4年级',
+      '4年级': '5年级', '5年级': '6年级', '6年级': '7年级',
+      '7年级': '8年级', '8年级': '9年级',
+    };
+    return map[grade] || '';
+  };
+
+  const handlePromote = async () => {
+    if (!promotingId || !promoteGrade.trim()) return;
+    setPromoting(true);
+    try {
+      await promoteClass(promotingId, promoteGrade.trim());
+      setPromotingId(null);
+      setPromoteGrade('');
+      mutate('classes');
+    } catch (err: any) {
+      alert(err.message || '操作失败');
+    } finally {
+      setPromoting(false);
+    }
+  };
+
+  const openPromote = (cls: any) => {
+    setPromotingId(cls.id);
+    setPromoteGrade(suggestNextGrade(cls.grade || ''));
+  };
 
   const handleGenerateCode = async (id: string) => {
     setGeneratingCode(id);
@@ -158,6 +195,12 @@ export function ClassesPage() {
                   编辑
                 </button>
                 <button
+                  onClick={() => openPromote(cls)}
+                  className="flex-1 text-xs py-1.5 text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
+                >
+                  升学
+                </button>
+                <button
                   onClick={() => handleArchive(cls.id, cls.name)}
                   className="flex-1 text-xs py-1.5 text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
                 >
@@ -225,6 +268,40 @@ export function ClassesPage() {
               </button>
               <button onClick={handleSave} disabled={saving} className="flex-1 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors text-sm font-medium">
                 {saving ? '保存中...' : '保存'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 升学弹窗 */}
+      {promotingId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setPromotingId(null)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold mb-2">班级升学</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              将班级升到高一年级，所有学生数据保留不变。学生无需重新注册，账号持续有效。
+            </p>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">新年级</label>
+              <input
+                type="text"
+                value={promoteGrade}
+                onChange={e => setPromoteGrade(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm"
+                placeholder="如：二年级"
+                autoFocus
+              />
+              <p className="text-xs text-gray-400 mt-1">系统已自动填入建议的新年级，可直接修改</p>
+            </div>
+
+            <div className="flex gap-3 mt-5">
+              <button onClick={() => setPromotingId(null)} className="flex-1 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                取消
+              </button>
+              <button onClick={handlePromote} disabled={promoting || !promoteGrade.trim()} className="flex-1 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors text-sm font-medium">
+                {promoting ? '处理中...' : '确认升学'}
               </button>
             </div>
           </div>
