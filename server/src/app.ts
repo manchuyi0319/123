@@ -20,15 +20,23 @@ import quizRoutes from './routes/quiz.routes';
 import announcementRoutes from './routes/announcements.routes';
 import bulletinRoutes from './routes/bulletin.routes';
 import semesterRoutes from './routes/semester.routes';
+import wechatAuthRoutes from './routes/wechat-auth.routes';
 
 const app = express();
 
+// CORS：开发环境 + 生产域名（通过环境变量 CORS_ORIGIN 配置）
+const allowedOrigins: (string | RegExp)[] = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3001',
+  'http://127.0.0.1:3001',
+];
+if (process.env.CORS_ORIGIN) {
+  allowedOrigins.push(process.env.CORS_ORIGIN);
+}
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    /\.vercel\.app$/,
-  ],
+  origin: allowedOrigins,
+  credentials: true,
 }));
 app.use(express.json());
 
@@ -37,6 +45,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/auth/wechat', wechatAuthRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/students', studentRoutes);

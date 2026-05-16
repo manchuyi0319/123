@@ -9,6 +9,9 @@ export interface Teacher {
   school: string | null;
   role: 'admin' | 'teacher' | 'parent';
   coins: number;
+  unionid?: string | null;
+  wechat_nickname?: string | null;
+  login_type?: 'email' | 'wechat' | 'both';
   created_at: string;
 }
 

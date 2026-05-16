@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { parentRegister } from '../api/parent';
 import { setToken } from '../api/client';
+import { WechatLoginButton } from '../components/auth/WechatLoginButton';
 
 type Mode = 'login' | 'register' | 'parent';
 
@@ -163,6 +164,13 @@ export function LoginPage() {
               {loading ? '请稍候...' : mode === 'parent' ? '家长注册' : mode === 'register' ? '注册' : '登录'}
             </button>
           </form>
+
+          {mode === 'login' && (
+            <WechatLoginButton onSuccess={(teacher) => {
+              setTeacherDirect(teacher);
+              navigate('/', { replace: true });
+            }} />
+          )}
 
           <p className="text-center mt-5 text-sm text-gray-500">
             {mode === 'login' ? (

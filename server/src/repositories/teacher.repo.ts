@@ -61,9 +61,31 @@ export const teacherRepo = {
     getDb().run("UPDATE teachers SET password_hash = ?, updated_at = datetime('now') WHERE id = ?", [passwordHash, id]);
   },
 
+  findByUnionid(unionid: string): TeacherRow | undefined {
+    return getDb().get('SELECT * FROM teachers WHERE unionid = ?', [unionid]) as TeacherRow | undefined;
+  },
+
+  createWechatUser(id: string, unionid: string, nickname: string, openid: string | null): Teacher {
+    const username = `wx_${openid || unionid.substring(0, 16)}`;
+    getDb().run(
+      `INSERT INTO teachers (id, username, password_hash, display_name, unionid, wechat_nickname, login_type, role)
+       VALUES (?, ?, ?, ?, ?, ?, 'wechat', 'teacher')`,
+      [id, username, '', nickname, unionid, nickname]
+    );
+    return this.findById(id)!;
+  },
+
+  updateWechatInfo(id: string, unionid: string, nickname: string): void {
+    getDb().run(
+      `UPDATE teachers SET unionid = ?, wechat_nickname = ?,
+        login_type = CASE WHEN login_type = 'wechat' THEN 'wechat' ELSE 'both' END,
+        updated_at = datetime('now') WHERE id = ?`,
+      [unionid, nickname, id]
+    );
+  },
+
   deleteById(id: string): void {
     const db = getDb();
-    // 级联删除：point_records → student_pets → students → classes → teacher
     db.run('DELETE FROM point_records WHERE teacher_id = ?', [id]);
     db.run(
       `DELETE FROM student_pets WHERE student_id IN (

@@ -23,6 +23,7 @@ import { SemesterPage } from './pages/SemesterPage';
 import { ParentDashboardPage } from './pages/parent/ParentDashboardPage';
 import { ParentChildDetailPage } from './pages/parent/ParentChildDetailPage';
 import { LinkChildPage } from './pages/parent/LinkChildPage';
+import { WechatCallbackPage } from './pages/WechatCallbackPage';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login/wechat-callback" element={<WechatCallbackPage />} />
           <Route element={<Layout />}>
             <Route index element={<DashboardPage />} />
             <Route path="classes" element={<ClassesPage />} />
