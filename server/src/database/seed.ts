@@ -26,8 +26,8 @@ export function runSeed(database: Database): void {
     // 全新安装：插入所有物种
     for (const pet of DEFAULT_PETS) {
       database.run(
-        'INSERT INTO pets (id, name, species, description, emoji, rarity, price, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [crypto.randomUUID(), pet.name, pet.species, pet.description, pet.emoji, pet.rarity, pet.price, pet.sort_order]
+        'INSERT INTO pets (id, name, species, description, emoji, rarity, price, sort_order, image_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [crypto.randomUUID(), pet.name, pet.species, pet.description, pet.emoji, pet.rarity, pet.price, pet.sort_order, pet.imageKey || null]
       );
     }
   } else {
@@ -36,13 +36,13 @@ export function runSeed(database: Database): void {
       const existing = database.get('SELECT id FROM pets WHERE species = ?', [pet.species]) as any;
       if (existing) {
         database.run(
-          'UPDATE pets SET name = ?, description = ?, emoji = ?, rarity = ?, price = ?, sort_order = ? WHERE species = ?',
-          [pet.name, pet.description, pet.emoji, pet.rarity, pet.price, pet.sort_order, pet.species]
+          'UPDATE pets SET name = ?, description = ?, emoji = ?, rarity = ?, price = ?, sort_order = ?, image_key = ? WHERE species = ?',
+          [pet.name, pet.description, pet.emoji, pet.rarity, pet.price, pet.sort_order, pet.imageKey || null, pet.species]
         );
       } else {
         database.run(
-          'INSERT INTO pets (id, name, species, description, emoji, rarity, price, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-          [crypto.randomUUID(), pet.name, pet.species, pet.description, pet.emoji, pet.rarity, pet.price, pet.sort_order]
+          'INSERT INTO pets (id, name, species, description, emoji, rarity, price, sort_order, image_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [crypto.randomUUID(), pet.name, pet.species, pet.description, pet.emoji, pet.rarity, pet.price, pet.sort_order, pet.imageKey || null]
         );
       }
     }

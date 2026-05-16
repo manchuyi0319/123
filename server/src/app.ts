@@ -66,9 +66,16 @@ app.use('/api/semester', semesterRoutes);
 
 // 生产环境：托管前端静态文件
 const distPath = path.resolve(__dirname, '../../client/dist');
-app.use(express.static(distPath));
+app.use(express.static(distPath, {
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  }
+}));
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) return next();
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.sendFile(path.join(distPath, 'index.html'));
 });
 

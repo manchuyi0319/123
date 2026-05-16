@@ -10,11 +10,28 @@ const router = Router();
 router.use(authMiddleware);
 
 const FEED_COST = 5;
+const INJURED_THRESHOLD = -10;  // 积分低于 -10 受伤
+const DEAD_THRESHOLD = -30;     // 积分低于 -30 阵亡
+
+// 根据积分计算宠物状态
+function computeStatus(totalPoints: number): 'alive' | 'injured' | 'dead' {
+  if (totalPoints <= DEAD_THRESHOLD) return 'dead';
+  if (totalPoints <= INJURED_THRESHOLD) return 'injured';
+  return 'alive';
+}
+
+// 更新学生所有宠物的状态
+function syncPetStatuses(db: any, studentId: string) {
+  const student = db.get('SELECT total_points FROM students WHERE id = ?', [studentId]) as any;
+  if (!student) return;
+  const newStatus = computeStatus(student.total_points);
+  db.run('UPDATE student_pets SET status = ? WHERE student_id = ? AND is_active = 1', [newStatus, studentId]);
+}
 
 // 获取所有宠物图鉴
 router.get('/', (_req: AuthRequest, res: Response) => {
   const db = getDb();
-  const pets = db.all('SELECT * FROM pets ORDER BY sort_order');
+  const pets = db.all('SELECT *, image_key FROM pets ORDER BY sort_order');
   res.json({ data: pets });
 });
 
@@ -77,7 +94,7 @@ router.post('/adopt', validate(adoptPetSchema), (req: AuthRequest, res: Response
   );
 
   const studentPet = db.get(
-    `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity
+    `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity, p.image_key
      FROM student_pets sp JOIN pets p ON sp.pet_id = p.id
      WHERE sp.id = ?`, [id]
   );
@@ -123,8 +140,11 @@ router.post('/feed', validate(feedPetSchema), (req: AuthRequest, res: Response) 
   );
   db.run('UPDATE students SET total_points = total_points + ? WHERE id = ?', [-FEED_COST, sp.student_id]);
 
+  // 同步宠物状态
+  syncPetStatuses(db, sp.student_id);
+
   const updated = db.get(
-    `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity
+    `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity, p.image_key
      FROM student_pets sp JOIN pets p ON sp.pet_id = p.id WHERE sp.id = ?`,
     [student_pet_id]
   );
@@ -146,7 +166,7 @@ router.post('/feed-all', (req: AuthRequest, res: Response) => {
   if (!student) { res.status(404).json({ error: '学生不存在或无权操作' }); return; }
 
   const pets = db.all(
-    `SELECT sp.*, p.name as pet_name, p.emoji, p.rarity
+    `SELECT sp.*, p.name as pet_name, p.emoji, p.rarity, p.image_key
      FROM student_pets sp JOIN pets p ON sp.pet_id = p.id
      WHERE sp.student_id = ? AND sp.is_active = 1`,
     [student_id]
@@ -179,7 +199,7 @@ router.post('/feed-all', (req: AuthRequest, res: Response) => {
     totalExpGain += expGain;
 
     const updated = db.get(
-      `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity
+      `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity, p.image_key
        FROM student_pets sp JOIN pets p ON sp.pet_id = p.id WHERE sp.id = ?`,
       [(sp as any).id]
     );
@@ -193,6 +213,9 @@ router.post('/feed-all', (req: AuthRequest, res: Response) => {
     [pointId, student_id, req.teacherId, -totalCost, `一键喂养 ${pets.length} 只宠物 +${totalExpGain}EXP`, 'feeding']
   );
   db.run('UPDATE students SET total_points = total_points + ? WHERE id = ?', [-totalCost, student_id]);
+
+  // 同步宠物状态
+  syncPetStatuses(db, student_id);
 
   res.json({
     data: results,
@@ -214,8 +237,11 @@ router.get('/student/:studentId', (req: AuthRequest, res: Response) => {
   );
   if (!student) { res.status(404).json({ error: '学生不存在或无权操作' }); return; }
 
+  // 先同步状态
+  syncPetStatuses(db, req.params.studentId);
+
   const pets = db.all(
-    `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity
+    `SELECT sp.*, p.name as pet_name, p.species, p.emoji, p.rarity, p.image_key
      FROM student_pets sp JOIN pets p ON sp.pet_id = p.id
      WHERE sp.student_id = ? AND sp.is_active = 1
      ORDER BY sp.hatched_at DESC`,
@@ -223,6 +249,60 @@ router.get('/student/:studentId', (req: AuthRequest, res: Response) => {
   );
 
   res.json({ data: pets });
+});
+
+// 复活宠物（积分回正后自动复活）
+router.post('/revive', (req: AuthRequest, res: Response) => {
+  const db = getDb();
+  const { student_id } = req.body;
+
+  const student = db.get(
+    `SELECT s.id, s.total_points FROM students s JOIN classes c ON s.class_id = c.id
+     WHERE s.id = ? AND c.teacher_id = ? AND s.is_active = 1`,
+    [student_id, req.teacherId]
+  );
+  if (!student) { res.status(404).json({ error: '学生不存在或无权操作' }); return; }
+
+  const st = student as any;
+  if (st.total_points <= DEAD_THRESHOLD) {
+    res.status(400).json({ error: `积分不足，当前 ${st.total_points} 分，需要高于 ${DEAD_THRESHOLD} 分才能复活` });
+    return;
+  }
+
+  const newStatus = computeStatus(st.total_points);
+  db.run('UPDATE student_pets SET status = ? WHERE student_id = ? AND is_active = 1', [newStatus, student_id]);
+
+  const wasDead = db.get(
+    "SELECT COUNT(*) as count FROM student_pets WHERE student_id = ? AND status = 'dead'",
+    [student_id]
+  ) as any;
+
+  res.json({
+    revived: wasDead.count > 0,
+    new_status: newStatus,
+    total_points: st.total_points,
+  });
+});
+
+// 获取宠物状态
+router.get('/status/:studentId', (req: AuthRequest, res: Response) => {
+  const db = getDb();
+  const student = db.get(
+    `SELECT s.id, s.total_points FROM students s JOIN classes c ON s.class_id = c.id
+     WHERE s.id = ? AND c.teacher_id = ?`,
+    [req.params.studentId, req.teacherId]
+  );
+  if (!student) { res.status(404).json({ error: '学生不存在或无权操作' }); return; }
+
+  syncPetStatuses(db, req.params.studentId);
+
+  const st = student as any;
+  res.json({
+    status: computeStatus(st.total_points),
+    total_points: st.total_points,
+    injured_threshold: INJURED_THRESHOLD,
+    dead_threshold: DEAD_THRESHOLD,
+  });
 });
 
 export default router;

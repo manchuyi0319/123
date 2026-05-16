@@ -71,6 +71,164 @@
   animation: pointPop 0.3s ease-out;
 }
 
+/* ===== 宠物系统增强样式 ===== */
+
+/* 玻璃态卡片 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.glass-card-dark {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 宠物头像容器 */
+.pet-avatar-container {
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), inset 0 2px 10px rgba(255, 255, 255, 0.8);
+  border: 4px solid white;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.pet-avatar-container.small { width: 65px; }
+.pet-avatar-container.medium { width: 90px; }
+.pet-avatar-container.large { width: 120px; }
+.pet-avatar-container.xlarge { width: 150px; }
+
+/* 宠物图片 */
+.pet-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* 宠物占位符 (emoji) */
+.pet-placeholder {
+  font-size: 3rem;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.pet-placeholder.small { font-size: 2rem; }
+.pet-placeholder.medium { font-size: 3rem; }
+.pet-placeholder.large { font-size: 4rem; }
+.pet-placeholder.xlarge { font-size: 5rem; }
+
+/* 宠物状态叠加层 */
+.pet-status-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 4px 8px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.pet-status-overlay.injured {
+  background: linear-gradient(to top, rgba(249,115,22,0.9), transparent);
+}
+
+.pet-status-overlay.dead {
+  background: linear-gradient(to top, rgba(75,85,99,0.9), transparent);
+}
+
+/* 等级角标 */
+.level-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 10;
+}
+
+/* 宠物卡片悬停效果 */
+.pet-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pet-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.pet-card:hover .pet-card-image {
+  transform: scale(1.05);
+}
+
+.pet-card-image {
+  transition: transform 0.3s ease-out;
+}
+
+/* 领奖台渐变 */
+.podium-gold {
+  background: linear-gradient(180deg, #ffd700, #daa520, #b8860b);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5), inset 0 2px rgba(255,255,255,0.4), 0 0 30px rgba(255,215,0,0.3);
+}
+
+.podium-silver {
+  background: linear-gradient(180deg, #c0c0c0, #a0a0a0, #808080);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 2px rgba(255,255,255,0.3);
+}
+
+.podium-bronze {
+  background: linear-gradient(180deg, #cd7f32, #a0522d, #8b4513);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35), inset 0 2px rgba(255,255,255,0.25);
+}
+
+/* 冠军聚光灯 */
+@keyframes spotlight-pulse {
+  0%, 100% { opacity: 0.2; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.5; transform: translateX(-50%) scale(1.1); }
+}
+
+.spotlight-effect {
+  animation: spotlight-pulse 3s ease-in-out infinite;
+}
+
+/* 卡片悬浮时的光泽扫过效果 */
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
 /* 自定义滚动条 */
 ::-webkit-scrollbar {
   width: 6px;

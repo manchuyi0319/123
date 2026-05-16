@@ -1,10 +1,12 @@
-import { RARITY_COLORS } from 'shared';
+import { RARITY_COLORS, RARITY_LABELS } from 'shared';
+import { PetImage } from './PetImage';
+import { PetStatusBadge } from './PetStatusBadge';
 
 const ANIMATION_CLASS: Record<string, string> = {
   legendary: 'animate-glow-legendary',
   epic: 'animate-glow-epic',
   rare: 'animate-glow-rare',
-  common: '', // 普通不闪烁
+  common: '',
 };
 
 const SIZE_CLASS: Record<string, string> = {
@@ -47,33 +49,51 @@ interface PetDetailModalProps {
   petName: string;
   nickname?: string;
   species?: string;
+  imageKey?: string;
   level: number;
   levelName: string;
   currentExp: number;
   progress: number;
   description?: string;
+  status?: 'alive' | 'injured' | 'dead';
   onClose: () => void;
   onFeed?: () => void;
 }
 
 export function PetDetailModal({
-  emoji, rarity, petName, nickname, species, level, levelName,
-  currentExp, progress, description, onClose, onFeed,
+  emoji, rarity, petName, nickname, species, imageKey, level, levelName,
+  currentExp, progress, description, status, onClose, onFeed,
 }: PetDetailModalProps) {
   const levelColor =
-    level >= 7 ? 'bg-yellow-400 text-yellow-900' :
-    level >= 5 ? 'bg-purple-400 text-purple-900' :
-    level >= 3 ? 'bg-blue-400 text-blue-900' :
-    'bg-green-400 text-green-900';
+    level >= 7 ? 'from-yellow-400 to-amber-500 text-yellow-900' :
+    level >= 5 ? 'from-purple-400 to-violet-500 text-purple-900' :
+    level >= 3 ? 'from-blue-400 to-cyan-500 text-blue-900' :
+    'from-green-400 to-emerald-500 text-green-900';
+
+  const expBarColor =
+    level >= 7 ? 'bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-300' :
+    level >= 5 ? 'bg-gradient-to-r from-purple-300 via-violet-300 to-indigo-300' :
+    level >= 3 ? 'bg-gradient-to-r from-blue-300 via-cyan-300 to-teal-300' :
+    'bg-gradient-to-r from-green-300 to-emerald-300';
+
+  const isDead = status === 'dead';
+  const isInjured = status === 'injured';
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-pet-pop-in" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-pet-pop-in" onClick={e => e.stopPropagation()}>
         <div className="text-center">
           {/* 大宠物头像 */}
-          <span className={`inline-block text-8xl p-4 rounded-full animate-float ${ANIMATION_CLASS[rarity] || ''}`}>
-            {emoji}
-          </span>
+          <div className={`mx-auto w-36 h-36 mb-4 ${isDead ? 'opacity-60 grayscale' : isInjured ? 'opacity-80' : ''}`}>
+            <PetImage
+              emoji={emoji}
+              imageKey={imageKey}
+              level={level}
+              rarity={rarity}
+              size="full"
+              showLevel={false}
+            />
+          </div>
 
           <h2 className="text-xl font-bold text-gray-800 mt-3">
             {nickname || petName}
@@ -81,17 +101,20 @@ export function PetDetailModal({
           {nickname && <p className="text-sm text-gray-400">{petName} · {species}</p>}
           {!nickname && species && <p className="text-sm text-gray-400">{species}</p>}
 
-          {/* 稀有度 + 等级 */}
-          <div className="flex items-center justify-center gap-2 mt-2">
+          {/* 状态徽章 + 稀有度 + 等级 */}
+          <div className="flex items-center justify-center gap-2 mt-2 flex-wrap">
+            {status && status !== 'alive' && (
+              <PetStatusBadge status={status} size="sm" />
+            )}
             <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
               rarity === 'legendary' ? 'bg-yellow-100 text-yellow-700' :
               rarity === 'epic' ? 'bg-purple-100 text-purple-700' :
               rarity === 'rare' ? 'bg-blue-100 text-blue-700' :
               'bg-gray-100 text-gray-600'
             }`}>
-              {rarity}
+              {RARITY_LABELS[rarity] || rarity}
             </span>
-            <span className={`px-2 py-0.5 text-xs font-medium rounded-full text-white ${levelColor}`}>
+            <span className={`px-2 py-0.5 text-xs font-bold rounded-full text-white bg-gradient-to-r ${levelColor}`}>
               Lv.{level} {levelName}
             </span>
           </div>
@@ -102,14 +125,9 @@ export function PetDetailModal({
               <span>{currentExp} EXP</span>
               <span>{progress}%</span>
             </div>
-            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
               <div
-                className={`h-full rounded-full transition-all duration-700 ease-out ${
-                  level >= 7 ? 'bg-yellow-400' :
-                  level >= 5 ? 'bg-purple-400' :
-                  level >= 3 ? 'bg-blue-400' :
-                  'bg-green-400'
-                }`}
+                className={`h-full rounded-full transition-all duration-700 ease-out ${expBarColor}`}
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -121,12 +139,12 @@ export function PetDetailModal({
         </div>
 
         <div className="flex gap-3 mt-5">
-          <button onClick={onClose} className="flex-1 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+          <button onClick={onClose} className="flex-1 py-2.5 text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium">
             关闭
           </button>
-          {onFeed && (
-            <button onClick={onFeed} className="flex-1 py-2 bg-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-500 transition-colors text-sm font-medium">
-              喂养 5分
+          {onFeed && !isDead && (
+            <button onClick={onFeed} className="flex-1 py-2.5 bg-gradient-to-r from-yellow-400 to-amber-500 text-yellow-900 rounded-xl hover:from-yellow-500 hover:to-amber-600 transition-all text-sm font-medium shadow-md hover:shadow-lg active:scale-95">
+              🍖 喂养 (5 积分)
             </button>
           )}
         </div>

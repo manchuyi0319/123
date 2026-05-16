@@ -70,8 +70,11 @@ export interface Pet {
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
   price: number;
   image_url: string | null;
+  image_key?: string;
   sort_order: number;
 }
+
+export type PetStatus = 'alive' | 'injured' | 'dead';
 
 export interface StudentPet {
   id: string;
@@ -80,6 +83,7 @@ export interface StudentPet {
   nickname: string | null;
   current_exp: number;
   is_active: number;
+  status: PetStatus;
   hatched_at: string;
   last_fed_at: string | null;
   pet?: Pet;
