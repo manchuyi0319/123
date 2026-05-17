@@ -144,6 +144,8 @@ function AdminPanel() {
                     <option value={10}>10 金币（稀有宠物一只）</option>
                     <option value={25}>25 金币（史诗宠物一只）</option>
                     <option value={50}>50 金币（传说宠物一只）</option>
+                    <option value={66}>66 金币（凶兽宠物一只）</option>
+                    <option value={88}>88 金币（神话宠物一只）</option>
                     <option value={100}>100 金币（超值装）</option>
                   </select>
                 </div>
@@ -266,6 +268,14 @@ const TEACHER_TOOLS = [
     color: 'bg-indigo-50 text-indigo-600 border-indigo-200',
     action: '修改密码',
   },
+  {
+    title: '学期重置',
+    desc: '学期结束后重置所有宠物的喂养等级，新学期学生需重新喂养宠物。此操作不可撤销',
+    icon: '⏳',
+    color: 'bg-red-50 text-red-600 border-red-200',
+    action: '重置宠物等级',
+    danger: true,
+  },
 ];
 
 function TeacherPanel() {
@@ -356,11 +366,28 @@ function TeacherPanel() {
     }
   };
 
+  const handleResetPets = async () => {
+    if (!confirm('确定要重置所有学生的宠物喂养等级吗？此操作不可撤销！学期结束后才建议使用。')) return;
+    setLoading(true);
+    setError('');
+    try {
+      const res = await apiRequest('/admin/reset-pets', { method: 'POST' });
+      setMsg((res as any).message || '宠物喂养等级已重置');
+      setActiveTool(null);
+    } catch (err: any) {
+      setError(err.message || '重置失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleToolAction = (tool: string) => {
     setMsg('');
     setError('');
     if (tool === '导出数据') {
       handleExportCSV();
+    } else if (tool === '重置宠物等级') {
+      handleResetPets();
     } else {
       setActiveTool(tool);
     }

@@ -12,6 +12,8 @@ export default {
         'float': 'float 3s ease-in-out infinite',
         'sparkle': 'sparkle 1.5s ease-in-out infinite',
         'level-up': 'levelUp 0.6s ease-out',
+        'glow-mythical': 'glow-mythical 2.5s ease-in-out infinite',
+        'glow-fierce': 'glow-fierce 2.5s ease-in-out infinite',
         'glow-legendary': 'glow-legendary 2.5s ease-in-out infinite',
         'glow-epic': 'glow-epic 2.5s ease-in-out infinite',
         'glow-rare': 'glow-rare 2.5s ease-in-out infinite',
@@ -38,6 +40,14 @@ export default {
           '0%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.3)' },
           '100%': { transform: 'scale(1)' },
+        },
+        'glow-mythical': {
+          '0%, 100%': { boxShadow: '0 0 10px rgba(239,68,68,0.5), 0 0 25px rgba(239,68,68,0.2)' },
+          '50%': { boxShadow: '0 0 20px rgba(239,68,68,0.8), 0 0 45px rgba(239,68,68,0.4)' },
+        },
+        'glow-fierce': {
+          '0%, 100%': { boxShadow: '0 0 8px rgba(249,115,22,0.5), 0 0 20px rgba(249,115,22,0.2)' },
+          '50%': { boxShadow: '0 0 16px rgba(249,115,22,0.7), 0 0 35px rgba(249,115,22,0.35)' },
         },
         'glow-legendary': {
           '0%, 100%': { boxShadow: '0 0 8px rgba(250,204,21,0.5), 0 0 20px rgba(250,204,21,0.2)' },

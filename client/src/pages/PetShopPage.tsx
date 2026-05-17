@@ -9,7 +9,7 @@ import { PetCard } from '../components/pet/PetCard';
 import { PetImage } from '../components/pet/PetImage';
 import { Link } from 'react-router-dom';
 
-const RARITY_ORDER = ['legendary', 'epic', 'rare', 'common'];
+const RARITY_ORDER = ['mythical', 'fierce', 'legendary', 'epic', 'rare', 'common'];
 
 export function PetShopPage() {
   const { data: petsData, error, isLoading } = useSWR('shop-pets', fetchShopPets);
@@ -91,6 +91,8 @@ export function PetShopPage() {
       <div className="flex gap-2 mb-6 flex-wrap">
         {[
           { key: 'all', label: '全部', emoji: '🐾' },
+          { key: 'mythical', label: '神话', emoji: '🔴' },
+          { key: 'fierce', label: '凶兽', emoji: '👹' },
           { key: 'legendary', label: '传说', emoji: '👑' },
           { key: 'epic', label: '史诗', emoji: '💎' },
           { key: 'rare', label: '稀有', emoji: '🌟' },

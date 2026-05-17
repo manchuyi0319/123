@@ -5,7 +5,7 @@ export interface PetSpeciesInput {
   species: string;
   description: string;
   emoji: string;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythical' | 'fierce';
   price: number;
   sort_order: number;
   imageKey?: string;
@@ -30,21 +30,31 @@ export const DEFAULT_PETS: PetSpeciesInput[] = [
   { name: '小熊猫', species: 'panda', description: '黑白相间的国宝，圆滚滚的特别讨人喜欢', emoji: '🐼', rarity: 'rare', price: 10, sort_order: 13, imageKey: 'panda' },
   { name: '智慧鸮', species: 'owl', description: '聪明博学的猫头鹰，戴着小小的眼镜', emoji: '🦉', rarity: 'rare', price: 10, sort_order: 14, imageKey: 'owl' },
   { name: '小企鹅', species: 'penguin', description: '摇摇摆摆的小企鹅，穿着天生的燕尾服', emoji: '🐧', rarity: 'rare', price: 10, sort_order: 15, imageKey: 'penguin' },
-  { name: '麒麟', species: 'kirin', description: '祥瑞之兽麒麟幼崽，所到之处祥云环绕', emoji: '🦌', rarity: 'rare', price: 10, sort_order: 16, imageKey: 'kirin' },
-  { name: '仙鹤', species: 'crane', description: '仙风道骨的仙鹤，翩翩起舞时如诗如画', emoji: '🦩', rarity: 'rare', price: 10, sort_order: 17, imageKey: 'crane' },
+  { name: '仙鹤', species: 'crane', description: '仙风道骨的仙鹤，翩翩起舞时如诗如画', emoji: '🦩', rarity: 'rare', price: 10, sort_order: 16, imageKey: 'crane' },
+  { name: '小灵鹿', species: 'deer', description: '林间精灵小灵鹿，温柔优雅充满灵性', emoji: '🦌', rarity: 'rare', price: 10, sort_order: 17, imageKey: 'deer' },
 
   // ===== 史诗 (6 种，25 金币) =====
   { name: '凤凰雏', species: 'phoenix', description: '浴火重生的神鸟幼崽，羽毛如火焰般绚烂', emoji: '🐦‍🔥', rarity: 'epic', price: 25, sort_order: 18, imageKey: 'phoenix' },
   { name: '小鲸鱼', species: 'whale', description: '海洋中的温柔巨兽，会喷出高高的水柱', emoji: '🐋', rarity: 'epic', price: 25, sort_order: 19, imageKey: 'whale' },
-  { name: '玄武', species: 'xuanwu', description: '北方守护神兽，龟蛇合一的坚韧存在', emoji: '🐢', rarity: 'epic', price: 25, sort_order: 20, imageKey: 'xuanwu' },
-  { name: '白虎', species: 'baihu', description: '西方守护神兽，威猛中带着王者之风', emoji: '🐅', rarity: 'epic', price: 25, sort_order: 21, imageKey: 'baihu' },
-  { name: '神龙', species: 'shenlong', description: '腾云驾雾的神龙，掌控风云雷电之力', emoji: '🐉', rarity: 'epic', price: 25, sort_order: 22, imageKey: 'shenlong' },
-  { name: '朱雀', species: 'zhuque', description: '南方守护神兽，烈焰中重生的不死鸟', emoji: '🦚', rarity: 'epic', price: 25, sort_order: 23, imageKey: 'zhuque' },
+  { name: '金乌', species: 'jinwu', description: '太阳神鸟金乌，三足栖息于扶桑神树之上', emoji: '☀️', rarity: 'epic', price: 25, sort_order: 20, imageKey: 'jinwu' },
+  { name: '鲲鹏', species: 'kunpeng', description: '北冥之鱼化而为鸟，扶摇直上九万里', emoji: '🐟', rarity: 'epic', price: 25, sort_order: 21, imageKey: 'kunpeng' },
+  { name: '貔貅', species: 'pixiu', description: '招财瑞兽貔貅，只进不出聚宝纳福', emoji: '🦁', rarity: 'epic', price: 25, sort_order: 22, imageKey: 'pixiu' },
+  { name: '神龙', species: 'shenlong', description: '腾云驾雾的神龙，掌控风云雷电之力', emoji: '🐉', rarity: 'epic', price: 25, sort_order: 23, imageKey: 'shenlong' },
 
-  // ===== 传说 (3 种，50 金币) =====
-  { name: '小火龙', species: 'dragon', description: '传说中的火焰之龙，能喷出炽热的火焰', emoji: '🦎', rarity: 'legendary', price: 50, sort_order: 24, imageKey: 'dragon' },
-  { name: '独角兽', species: 'unicorn', description: '纯洁优雅的魔法生物，角上闪烁着星光', emoji: '🦄', rarity: 'legendary', price: 50, sort_order: 25, imageKey: 'unicorn' },
-  { name: '青龙', species: 'qinglong', description: '东方守护神兽之首，翱翔于九天之上', emoji: '🐲', rarity: 'legendary', price: 50, sort_order: 26, imageKey: 'qinglong' },
+  // ===== 传说 (4 种，四圣兽，50 金币) =====
+  { name: '青龙', species: 'qinglong', description: '东方守护圣兽之首，翱翔于九天之上', emoji: '🐲', rarity: 'legendary', price: 50, sort_order: 24, imageKey: 'qinglong' },
+  { name: '白虎', species: 'baihu', description: '西方守护圣兽，威猛中带着王者之风', emoji: '🐅', rarity: 'legendary', price: 50, sort_order: 25, imageKey: 'baihu' },
+  { name: '朱雀', species: 'zhuque', description: '南方守护圣兽，烈焰中重生的不死神鸟', emoji: '🦚', rarity: 'legendary', price: 50, sort_order: 26, imageKey: 'zhuque' },
+  { name: '玄武', species: 'xuanwu', description: '北方守护圣兽，龟蛇合一的坚韧存在', emoji: '🐢', rarity: 'legendary', price: 50, sort_order: 27, imageKey: 'xuanwu' },
+
+  // ===== 神话 (3 种，88 金币) =====
+  { name: '五爪神龙应龙', species: 'yinglong', description: '上古神话之龙，五爪生风，呼云唤雨，威震九州', emoji: '🐲', rarity: 'mythical', price: 88, sort_order: 28, imageKey: 'yinglong' },
+  { name: '祥瑞麒麟', species: 'xiangrui-kirin', description: '瑞兽之尊，独角祥云，所到之处五谷丰登天下太平', emoji: '🦄', rarity: 'mythical', price: 88, sort_order: 29, imageKey: 'xiangrui-kirin' },
+  { name: '通晓万物白泽', species: 'baize', description: '智慧之兽白泽，通晓天地万物，能言善语预知未来', emoji: '🐏', rarity: 'mythical', price: 88, sort_order: 30, imageKey: 'baize' },
+
+  // ===== 凶兽 (2 种，66 金币) =====
+  { name: '饕餮', species: 'taotie', description: '上古四凶之首，贪食天地，吞噬万物之力', emoji: '👹', rarity: 'fierce', price: 66, sort_order: 31, imageKey: 'taotie' },
+  { name: '穷奇', species: 'qiongqi', description: '上古四凶之一，虎形有翼，惩善扬恶的狂兽', emoji: '👺', rarity: 'fierce', price: 66, sort_order: 32, imageKey: 'qiongqi' },
 ];
 
 export const MAX_ADOPTION = 5;
@@ -53,6 +63,8 @@ export const COIN_PACKAGES = [
   { coins: 10, amount: 10, label: '10 金币', desc: '够买一只稀有宠物' },
   { coins: 25, amount: 25, label: '25 金币', desc: '够买一只史诗宠物' },
   { coins: 50, amount: 50, label: '50 金币', desc: '够买一只传说宠物' },
+  { coins: 66, amount: 66, label: '66 金币', desc: '够买一只凶兽宠物' },
+  { coins: 88, amount: 88, label: '88 金币', desc: '够买一只神话宠物' },
   { coins: 100, amount: 100, label: '100 金币', desc: '最划算，买什么都够' },
 ];
 
@@ -61,6 +73,8 @@ export const RARITY_LABELS: Record<string, string> = {
   rare: '稀有',
   epic: '史诗',
   legendary: '传说',
+  mythical: '神话',
+  fierce: '凶兽',
 };
 
 export const RARITY_COLORS: Record<string, string> = {
@@ -68,9 +82,13 @@ export const RARITY_COLORS: Record<string, string> = {
   rare: 'bg-blue-100 text-blue-700 border-blue-300',
   epic: 'bg-purple-100 text-purple-700 border-purple-300',
   legendary: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+  mythical: 'bg-red-100 text-red-700 border-red-300',
+  fierce: 'bg-orange-100 text-orange-700 border-orange-300',
 };
 
 export const RARITY_GRADIENTS: Record<string, string> = {
+  mythical: 'from-red-50 to-rose-100 border-red-400 shadow-red-400/30',
+  fierce: 'from-orange-50 to-amber-100 border-orange-400 shadow-orange-400/25',
   legendary: 'from-yellow-50 to-amber-100 border-yellow-400 shadow-yellow-400/30',
   epic: 'from-purple-50 to-violet-100 border-purple-400 shadow-purple-400/25',
   rare: 'from-blue-50 to-cyan-100 border-blue-400 shadow-blue-400/20',
@@ -78,6 +96,8 @@ export const RARITY_GRADIENTS: Record<string, string> = {
 };
 
 export const RARITY_GLOW: Record<string, string> = {
+  mythical: 'shadow-lg shadow-red-400/40 ring-2 ring-red-300/50',
+  fierce: 'shadow-lg shadow-orange-400/35 ring-2 ring-orange-300/40',
   legendary: 'shadow-lg shadow-yellow-400/40 ring-2 ring-yellow-300/50',
   epic: 'shadow-md shadow-purple-400/30 ring-2 ring-purple-300/40',
   rare: 'shadow-md shadow-blue-400/25 ring-1 ring-blue-200/30',
@@ -85,9 +105,11 @@ export const RARITY_GLOW: Record<string, string> = {
 };
 
 export const RARITY_BADGE: Record<string, string> = {
+  mythical: 'bg-gradient-to-r from-red-400 to-rose-500 text-red-900',
+  fierce: 'bg-gradient-to-r from-orange-400 to-amber-500 text-orange-900',
   legendary: 'bg-gradient-to-r from-yellow-400 to-amber-500 text-yellow-900',
-  rare: 'bg-gradient-to-r from-blue-400 to-cyan-500 text-blue-900',
   epic: 'bg-gradient-to-r from-purple-400 to-violet-500 text-purple-900',
+  rare: 'bg-gradient-to-r from-blue-400 to-cyan-500 text-blue-900',
   common: 'bg-gray-200 text-gray-600',
 };
 

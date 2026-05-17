@@ -15,6 +15,16 @@
 }
 
 /* 宠物稀有度光环动画 */
+@keyframes glow-mythical {
+  0%, 100% { box-shadow: 0 0 10px rgba(239,68,68,0.5), 0 0 25px rgba(239,68,68,0.2); }
+  50% { box-shadow: 0 0 20px rgba(239,68,68,0.8), 0 0 45px rgba(239,68,68,0.4); }
+}
+
+@keyframes glow-fierce {
+  0%, 100% { box-shadow: 0 0 8px rgba(249,115,22,0.5), 0 0 20px rgba(249,115,22,0.2); }
+  50% { box-shadow: 0 0 16px rgba(249,115,22,0.7), 0 0 35px rgba(249,115,22,0.35); }
+}
+
 @keyframes glow-legendary {
   0%, 100% { box-shadow: 0 0 8px rgba(250,204,21,0.5), 0 0 20px rgba(250,204,21,0.2); }
   50% { box-shadow: 0 0 16px rgba(250,204,21,0.8), 0 0 35px rgba(250,204,21,0.4); }

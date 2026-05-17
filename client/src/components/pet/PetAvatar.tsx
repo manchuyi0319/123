@@ -3,6 +3,8 @@ import { PetImage } from './PetImage';
 import { PetStatusBadge } from './PetStatusBadge';
 
 const ANIMATION_CLASS: Record<string, string> = {
+  mythical: 'animate-glow-mythical',
+  fierce: 'animate-glow-fierce',
   legendary: 'animate-glow-legendary',
   epic: 'animate-glow-epic',
   rare: 'animate-glow-rare',
@@ -107,6 +109,8 @@ export function PetDetailModal({
               <PetStatusBadge status={status} size="sm" />
             )}
             <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+              rarity === 'mythical' ? 'bg-red-100 text-red-700' :
+              rarity === 'fierce' ? 'bg-orange-100 text-orange-700' :
               rarity === 'legendary' ? 'bg-yellow-100 text-yellow-700' :
               rarity === 'epic' ? 'bg-purple-100 text-purple-700' :
               rarity === 'rare' ? 'bg-blue-100 text-blue-700' :

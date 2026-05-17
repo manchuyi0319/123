@@ -105,5 +105,24 @@ export function runSeed(database: Database): void {
     }
   }
 
+  // 清理不再存在于 DEFAULT_PETS 中的旧宠物
+  const activeSpecies = new Set(DEFAULT_PETS.map(p => p.species));
+  const allPets = database.all('SELECT id, species FROM pets') as any[];
+  let cleanedCount = 0;
+  for (const oldPet of allPets) {
+    if (!activeSpecies.has(oldPet.species)) {
+      const refCount = database.get('SELECT COUNT(*) as count FROM student_pets WHERE pet_id = ?', [oldPet.id]) as any;
+      if (refCount.count === 0) {
+        database.run('DELETE FROM pets WHERE id = ?', [oldPet.id]);
+        cleanedCount++;
+      } else {
+        database.run('UPDATE pets SET sort_order = sort_order + 100 WHERE id = ?', [oldPet.id]);
+      }
+    }
+  }
+  if (cleanedCount > 0) {
+    console.log(`  Seed: cleaned ${cleanedCount} obsolete pets`);
+  }
+
   console.log(`  Seed: ${DEFAULT_PETS.length} pets, ${DEFAULT_PRESETS.length} evaluation rules`);
 }

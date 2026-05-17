@@ -43,7 +43,7 @@ export function WalletPage() {
           <span className="text-5xl">🪙</span>
           <span className="text-4xl font-bold">{isLoading ? '...' : coins}</span>
         </div>
-        <p className="text-amber-100 text-sm mt-2">用于购买稀有、史诗、传说宠物</p>
+        <p className="text-amber-100 text-sm mt-2">用于购买稀有、史诗、传说、凶兽、神话宠物</p>
       </div>
 
       {/* 充值码兑换 */}

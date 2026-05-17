@@ -92,6 +92,25 @@ router.post('/reset-points', (req: AuthRequest, res: Response) => {
   res.json({ success: true });
 });
 
+// 学期结束：重置宠物喂养等级
+router.post('/reset-pets', (req: AuthRequest, res: Response) => {
+  const db = getDb();
+  const teacherId = req.teacherId!;
+
+  // 重置该教师所有学生宠物的经验值和最后喂养时间
+  const result = db.run(
+    `UPDATE student_pets SET current_exp = 0, last_fed_at = NULL
+     WHERE student_id IN (
+       SELECT s.id FROM students s
+       JOIN classes c ON s.class_id = c.id
+       WHERE c.teacher_id = ? AND c.is_archived = 0 AND s.is_active = 1
+     ) AND is_active = 1`,
+    [teacherId]
+  );
+
+  res.json({ success: true, message: `已重置 ${(result as any).changes || 0} 只宠物的喂养等级` });
+});
+
 // ===== 以下为管理员专属接口 =====
 router.use(adminMiddleware);
 

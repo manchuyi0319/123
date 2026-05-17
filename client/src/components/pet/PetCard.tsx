@@ -7,7 +7,7 @@ interface PetCardProps {
   species: string;
   emoji: string;
   imageKey?: string;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythical' | 'fierce';
   price: number;
   description?: string;
   coins?: number;
@@ -85,6 +85,8 @@ export function PetCard({
             )}
           </div>
           <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
+            rarity === 'mythical' ? 'bg-red-100 text-red-700' :
+            rarity === 'fierce' ? 'bg-orange-100 text-orange-700' :
             rarity === 'legendary' ? 'bg-yellow-100 text-yellow-700' :
             rarity === 'epic' ? 'bg-purple-100 text-purple-700' :
             rarity === 'rare' ? 'bg-blue-100 text-blue-700' :

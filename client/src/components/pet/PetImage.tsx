@@ -98,7 +98,7 @@ export function PetImage({
       )}
 
       {/* 光泽效果 (传说/史诗) */}
-      {(rarity === 'legendary' || rarity === 'epic') && (
+      {(rarity === 'mythical' || rarity === 'legendary' || rarity === 'epic') && (
         <div className="shimmer-effect absolute inset-0 rounded-2xl pointer-events-none" />
       )}
     </div>

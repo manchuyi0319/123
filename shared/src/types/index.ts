@@ -67,7 +67,7 @@ export interface Pet {
   species: string;
   description: string | null;
   emoji: string;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythical' | 'fierce';
   price: number;
   image_url: string | null;
   image_key?: string;
