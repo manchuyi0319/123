@@ -1,46 +1,68 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Input, Button } from '@tarojs/components';
 import { useApp } from '../../app';
 import Taro from '@tarojs/taro';
+import { login, register, wechatMiniLogin } from '../../api';
 
 export default function LoginPage() {
-  const { auth, handleWechatLogin } = useApp();
+  const { auth, setAuth } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // 从入口页获取角色
+  useEffect(() => {
+    const role = Taro.getStorageSync('login_role') || 'teacher';
+  }, []);
+
   if (auth.token) {
-    Taro.redirectTo({ url: '/pages/index/index' });
+    Taro.redirectTo({ url: '/pages/dashboard/dashboard' });
     return null;
   }
 
-  const API_BASE = Taro.getStorageSync('api_base') || 'https://YOUR_DOMAIN.com/api';
-
   const handleSubmit = async () => {
+    if (!email.trim() || !password.trim()) {
+      setError('请填写邮箱和密码');
+      return;
+    }
     setError('');
     setLoading(true);
     try {
-      const endpoint = mode === 'register' ? '/auth/register' : '/auth/login';
-      const body = mode === 'register'
-        ? { email, password, display_name: email.split('@')[0] }
-        : { email, password };
+      const result = mode === 'register'
+        ? await register(email.trim(), password, displayName.trim() || undefined)
+        : await login(email.trim(), password);
 
-      const res = await Taro.request({
-        url: `${API_BASE}${endpoint}`,
-        method: 'POST',
-        data: body,
-      });
-
-      const data: any = res.data;
-      if (data.token) {
-        Taro.setStorageSync('token', data.token);
-        Taro.setStorageSync('teacher', data.teacher);
-        Taro.redirectTo({ url: '/pages/index/index' });
-      }
+      Taro.setStorageSync('token', result.token);
+      Taro.setStorageSync('teacher', result.teacher);
+      setAuth({ token: result.token, teacher: result.teacher, loading: false });
+      Taro.redirectTo({ url: '/pages/dashboard/dashboard' });
     } catch (err: any) {
-      setError(err.errMsg || '操作失败');
+      setError(err.message || '操作失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleWechatLogin = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const { code } = await Taro.login();
+      const result = await wechatMiniLogin(code);
+
+      Taro.setStorageSync('token', result.token);
+      Taro.setStorageSync('teacher', result.teacher);
+      setAuth({ token: result.token, teacher: result.teacher, loading: false });
+
+      if (result.isNewUser) {
+        Taro.showModal({ title: '首次登录', content: '请先使用邮箱注册并关联微信，或联系管理员绑定账号。', showCancel: false });
+      }
+      Taro.redirectTo({ url: '/pages/dashboard/dashboard' });
+    } catch (err: any) {
+      setError(err.message || '微信登录失败，请使用邮箱登录');
     } finally {
       setLoading(false);
     }
@@ -48,21 +70,21 @@ export default function LoginPage() {
 
   return (
     <View style={{ padding: '48rpx' }}>
-      <View style={{ textAlign: 'center', marginBottom: '60rpx', marginTop: '80rpx' }}>
-        <Text style={{ fontSize: '80rpx' }}>📚</Text>
+      <View style={{ textAlign: 'center', marginTop: '60rpx', marginBottom: '60rpx' }}>
+        <Text style={{ fontSize: '80rpx', display: 'block' }}>📚</Text>
+        <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#1F2937', display: 'block', marginTop: '16rpx' }}>
+          {mode === 'login' ? '登录' : '注册'}
+        </Text>
       </View>
 
       {/* 模式切换 */}
       <View style={{ display: 'flex', marginBottom: '48rpx', borderRadius: '16rpx', overflow: 'hidden', border: '2rpx solid #E5E7EB' }}>
-        {['login', 'register'].map(m => (
+        {(['login', 'register'] as const).map(m => (
           <View
             key={m}
-            onClick={() => { setMode(m as any); setError(''); }}
+            onClick={() => { setMode(m); setError(''); }}
             style={{
-              flex: 1,
-              padding: '20rpx',
-              textAlign: 'center',
-              fontSize: '28rpx',
+              flex: 1, padding: '20rpx', textAlign: 'center', fontSize: '28rpx',
               background: mode === m ? '#4F46E5' : '#fff',
               color: mode === m ? '#fff' : '#6B7280',
             }}
@@ -78,33 +100,46 @@ export default function LoginPage() {
         </View>
       )}
 
-      <View style={{ marginBottom: '32rpx' }}>
-        <Text style={{ fontSize: '24rpx', color: '#6B7280', marginBottom: '12rpx' }}>邮箱</Text>
+      <View className="input-group">
+        <Text className="input-label">邮箱</Text>
         <Input
           value={email}
           onInput={e => setEmail(e.detail.value)}
           placeholder="请输入邮箱"
-          style={{ border: '2rpx solid #E5E7EB', borderRadius: '12rpx', padding: '24rpx', fontSize: '28rpx' }}
+          className="input-field"
         />
       </View>
 
-      <View style={{ marginBottom: '48rpx' }}>
-        <Text style={{ fontSize: '24rpx', color: '#6B7280', marginBottom: '12rpx' }}>密码</Text>
+      {mode === 'register' && (
+        <View className="input-group">
+          <Text className="input-label">昵称</Text>
+          <Input
+            value={displayName}
+            onInput={e => setDisplayName(e.detail.value)}
+            placeholder="你的名字（选填）"
+            className="input-field"
+          />
+        </View>
+      )}
+
+      <View className="input-group">
+        <Text className="input-label">密码</Text>
         <Input
           password
           value={password}
           onInput={e => setPassword(e.detail.value)}
           placeholder="请输入密码"
-          style={{ border: '2rpx solid #E5E7EB', borderRadius: '12rpx', padding: '24rpx', fontSize: '28rpx' }}
+          className="input-field"
         />
       </View>
 
       <Button
         onClick={handleSubmit}
         loading={loading}
-        style={{ background: '#4F46E5', color: '#fff', borderRadius: '12rpx', width: '100%' }}
+        className="btn btn-primary"
+        style={{ width: '100%', marginTop: '16rpx' }}
       >
-        {mode === 'register' ? '注册' : '登录'}
+        {mode === 'login' ? '登录' : '注册'}
       </Button>
 
       {/* 微信快捷登录 */}

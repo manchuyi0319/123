@@ -25,36 +25,36 @@ export const DEFAULT_PETS: PetSpeciesInput[] = [
   { name: '柯基', species: 'corgi', description: '短腿小柯基，圆滚滚的屁股走起路来超可爱', emoji: '🐕', rarity: 'common', price: 0, sort_order: 10, imageKey: 'corgi' },
   { name: '羊驼', species: 'alpaca', description: '毛茸茸的羊驼宝宝，呆萌的样子让人忍不住想抱抱', emoji: '🦙', rarity: 'common', price: 0, sort_order: 11, imageKey: 'alpaca' },
 
-  // ===== 稀有 (6 种，10 金币) =====
-  { name: '小灵狐', species: 'fox', description: '机灵可爱的小狐狸，拥有九条毛茸茸的尾巴', emoji: '🦊', rarity: 'rare', price: 10, sort_order: 12, imageKey: 'fox' },
-  { name: '小熊猫', species: 'panda', description: '黑白相间的国宝，圆滚滚的特别讨人喜欢', emoji: '🐼', rarity: 'rare', price: 10, sort_order: 13, imageKey: 'panda' },
-  { name: '智慧鸮', species: 'owl', description: '聪明博学的猫头鹰，戴着小小的眼镜', emoji: '🦉', rarity: 'rare', price: 10, sort_order: 14, imageKey: 'owl' },
-  { name: '小企鹅', species: 'penguin', description: '摇摇摆摆的小企鹅，穿着天生的燕尾服', emoji: '🐧', rarity: 'rare', price: 10, sort_order: 15, imageKey: 'penguin' },
-  { name: '仙鹤', species: 'crane', description: '仙风道骨的仙鹤，翩翩起舞时如诗如画', emoji: '🦩', rarity: 'rare', price: 10, sort_order: 16, imageKey: 'crane' },
-  { name: '小灵鹿', species: 'deer', description: '林间精灵小灵鹿，温柔优雅充满灵性', emoji: '🦌', rarity: 'rare', price: 10, sort_order: 17, imageKey: 'deer' },
+  // ===== 稀有 (6 种，免费) =====
+  { name: '小灵狐', species: 'fox', description: '机灵可爱的小狐狸，拥有九条毛茸茸的尾巴', emoji: '🦊', rarity: 'rare', price: 0, sort_order: 12, imageKey: 'fox' },
+  { name: '小熊猫', species: 'panda', description: '黑白相间的国宝，圆滚滚的特别讨人喜欢', emoji: '🐼', rarity: 'rare', price: 0, sort_order: 13, imageKey: 'panda' },
+  { name: '智慧鸮', species: 'owl', description: '聪明博学的猫头鹰，戴着小小的眼镜', emoji: '🦉', rarity: 'rare', price: 0, sort_order: 14, imageKey: 'owl' },
+  { name: '小企鹅', species: 'penguin', description: '摇摇摆摆的小企鹅，穿着天生的燕尾服', emoji: '🐧', rarity: 'rare', price: 0, sort_order: 15, imageKey: 'penguin' },
+  { name: '仙鹤', species: 'crane', description: '仙风道骨的仙鹤，翩翩起舞时如诗如画', emoji: '🦩', rarity: 'rare', price: 0, sort_order: 16, imageKey: 'crane' },
+  { name: '小灵鹿', species: 'deer', description: '林间精灵小灵鹿，温柔优雅充满灵性', emoji: '🦌', rarity: 'rare', price: 0, sort_order: 17, imageKey: 'deer' },
 
-  // ===== 史诗 (6 种，25 金币) =====
-  { name: '凤凰雏', species: 'phoenix', description: '浴火重生的神鸟幼崽，羽毛如火焰般绚烂', emoji: '🐦‍🔥', rarity: 'epic', price: 25, sort_order: 18, imageKey: 'phoenix' },
-  { name: '小鲸鱼', species: 'whale', description: '海洋中的温柔巨兽，会喷出高高的水柱', emoji: '🐋', rarity: 'epic', price: 25, sort_order: 19, imageKey: 'whale' },
-  { name: '金乌', species: 'jinwu', description: '太阳神鸟金乌，三足栖息于扶桑神树之上', emoji: '☀️', rarity: 'epic', price: 25, sort_order: 20, imageKey: 'jinwu' },
-  { name: '鲲鹏', species: 'kunpeng', description: '北冥之鱼化而为鸟，扶摇直上九万里', emoji: '🐟', rarity: 'epic', price: 25, sort_order: 21, imageKey: 'kunpeng' },
-  { name: '貔貅', species: 'pixiu', description: '招财瑞兽貔貅，只进不出聚宝纳福', emoji: '🦁', rarity: 'epic', price: 25, sort_order: 22, imageKey: 'pixiu' },
-  { name: '神龙', species: 'shenlong', description: '腾云驾雾的神龙，掌控风云雷电之力', emoji: '🐉', rarity: 'epic', price: 25, sort_order: 23, imageKey: 'shenlong' },
+  // ===== 史诗 (6 种，免费) =====
+  { name: '凤凰雏', species: 'phoenix', description: '浴火重生的神鸟幼崽，羽毛如火焰般绚烂', emoji: '🐦‍🔥', rarity: 'epic', price: 0, sort_order: 18, imageKey: 'phoenix' },
+  { name: '小鲸鱼', species: 'whale', description: '海洋中的温柔巨兽，会喷出高高的水柱', emoji: '🐋', rarity: 'epic', price: 0, sort_order: 19, imageKey: 'whale' },
+  { name: '金乌', species: 'jinwu', description: '太阳神鸟金乌，三足栖息于扶桑神树之上', emoji: '☀️', rarity: 'epic', price: 0, sort_order: 20, imageKey: 'jinwu' },
+  { name: '鲲鹏', species: 'kunpeng', description: '北冥之鱼化而为鸟，扶摇直上九万里', emoji: '🐟', rarity: 'epic', price: 0, sort_order: 21, imageKey: 'kunpeng' },
+  { name: '貔貅', species: 'pixiu', description: '招财瑞兽貔貅，只进不出聚宝纳福', emoji: '🦁', rarity: 'epic', price: 0, sort_order: 22, imageKey: 'pixiu' },
+  { name: '神龙', species: 'shenlong', description: '腾云驾雾的神龙，掌控风云雷电之力', emoji: '🐉', rarity: 'epic', price: 0, sort_order: 23, imageKey: 'shenlong' },
 
-  // ===== 传说 (4 种，四圣兽，50 金币) =====
-  { name: '青龙', species: 'qinglong', description: '东方守护圣兽之首，翱翔于九天之上', emoji: '🐲', rarity: 'legendary', price: 50, sort_order: 24, imageKey: 'qinglong' },
-  { name: '白虎', species: 'baihu', description: '西方守护圣兽，威猛中带着王者之风', emoji: '🐅', rarity: 'legendary', price: 50, sort_order: 25, imageKey: 'baihu' },
-  { name: '朱雀', species: 'zhuque', description: '南方守护圣兽，烈焰中重生的不死神鸟', emoji: '🦚', rarity: 'legendary', price: 50, sort_order: 26, imageKey: 'zhuque' },
-  { name: '玄武', species: 'xuanwu', description: '北方守护圣兽，龟蛇合一的坚韧存在', emoji: '🐢', rarity: 'legendary', price: 50, sort_order: 27, imageKey: 'xuanwu' },
+  // ===== 传说 (4 种，四圣兽，免费) =====
+  { name: '青龙', species: 'qinglong', description: '东方守护圣兽之首，翱翔于九天之上', emoji: '🐲', rarity: 'legendary', price: 0, sort_order: 24, imageKey: 'qinglong' },
+  { name: '白虎', species: 'baihu', description: '西方守护圣兽，威猛中带着王者之风', emoji: '🐅', rarity: 'legendary', price: 0, sort_order: 25, imageKey: 'baihu' },
+  { name: '朱雀', species: 'zhuque', description: '南方守护圣兽，烈焰中重生的不死神鸟', emoji: '🦚', rarity: 'legendary', price: 0, sort_order: 26, imageKey: 'zhuque' },
+  { name: '玄武', species: 'xuanwu', description: '北方守护圣兽，龟蛇合一的坚韧存在', emoji: '🐢', rarity: 'legendary', price: 0, sort_order: 27, imageKey: 'xuanwu' },
 
-  // ===== 神话 (3 种，88 金币) =====
-  { name: '五爪神龙应龙', species: 'yinglong', description: '上古神话之龙，五爪生风，呼云唤雨，威震九州', emoji: '🐲', rarity: 'mythical', price: 88, sort_order: 28, imageKey: 'yinglong' },
-  { name: '祥瑞麒麟', species: 'xiangrui-kirin', description: '瑞兽之尊，独角祥云，所到之处五谷丰登天下太平', emoji: '🦄', rarity: 'mythical', price: 88, sort_order: 29, imageKey: 'xiangrui-kirin' },
-  { name: '通晓万物白泽', species: 'baize', description: '智慧之兽白泽，通晓天地万物，能言善语预知未来', emoji: '🐏', rarity: 'mythical', price: 88, sort_order: 30, imageKey: 'baize' },
+  // ===== 神话 (3 种，免费) =====
+  { name: '五爪神龙应龙', species: 'yinglong', description: '上古神话之龙，五爪生风，呼云唤雨，威震九州', emoji: '🐲', rarity: 'mythical', price: 0, sort_order: 28, imageKey: 'yinglong' },
+  { name: '祥瑞麒麟', species: 'xiangrui-kirin', description: '瑞兽之尊，独角祥云，所到之处五谷丰登天下太平', emoji: '🦄', rarity: 'mythical', price: 0, sort_order: 29, imageKey: 'xiangrui-kirin' },
+  { name: '通晓万物白泽', species: 'baize', description: '智慧之兽白泽，通晓天地万物，能言善语预知未来', emoji: '🐏', rarity: 'mythical', price: 0, sort_order: 30, imageKey: 'baize' },
 
-  // ===== 凶兽 (2 种，66 金币) =====
-  { name: '饕餮', species: 'taotie', description: '上古四凶之首，贪食天地，吞噬万物之力', emoji: '👹', rarity: 'fierce', price: 66, sort_order: 31, imageKey: 'taotie' },
-  { name: '穷奇', species: 'qiongqi', description: '上古四凶之一，虎形有翼，惩善扬恶的狂兽', emoji: '👺', rarity: 'fierce', price: 66, sort_order: 32, imageKey: 'qiongqi' },
+  // ===== 凶兽 (2 种，免费) =====
+  { name: '饕餮', species: 'taotie', description: '上古四凶之首，贪食天地，吞噬万物之力', emoji: '👹', rarity: 'fierce', price: 0, sort_order: 31, imageKey: 'taotie' },
+  { name: '穷奇', species: 'qiongqi', description: '上古四凶之一，虎形有翼，惩善扬恶的狂兽', emoji: '👺', rarity: 'fierce', price: 0, sort_order: 32, imageKey: 'qiongqi' },
 ];
 
 export const MAX_ADOPTION = 5;

@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { fetchShopPets, fetchWallet } from '../api/shop';
+import { fetchShopPets } from '../api/shop';
 import { adoptPet } from '../api/pets';
 import { fetchClasses } from '../api/classes';
 import { fetchStudents } from '../api/students';
 import { RARITY_LABELS, MAX_ADOPTION } from 'shared';
 import { PetCard } from '../components/pet/PetCard';
 import { PetImage } from '../components/pet/PetImage';
-import { Link } from 'react-router-dom';
 
 const RARITY_ORDER = ['mythical', 'fierce', 'legendary', 'epic', 'rare', 'common'];
 
 export function PetShopPage() {
   const { data: petsData, error, isLoading } = useSWR('shop-pets', fetchShopPets);
-  const { data: walletData, mutate: mutateWallet } = useSWR('wallet', fetchWallet);
   const { data: classesData } = useSWR('shop-classes', fetchClasses);
   const [selectedClassId, setSelectedClassId] = useState('');
   const { data: studentsData } = useSWR(
@@ -30,7 +28,6 @@ export function PetShopPage() {
   const [filterRarity, setFilterRarity] = useState<string>('all');
 
   const pets = petsData?.data || [];
-  const coins = walletData?.coins || 0;
   const classes = classesData?.data || [];
   const students = studentsData?.data || [];
 
@@ -65,7 +62,6 @@ export function PetShopPage() {
       });
       setShowModal(false);
       mutate('shop-pets');
-      mutateWallet();
     } catch (err: any) {
       setAdoptError(err.message || '购买失败');
     } finally { setAdopting(false); }
@@ -76,14 +72,6 @@ export function PetShopPage() {
       {/* 顶部栏 */}
       <div className="flex items-center justify-between mb-2 flex-wrap gap-3">
         <h2 className="text-2xl font-bold text-gray-800">宠物商城</h2>
-        <Link
-          to="/wallet"
-          className="glass-card inline-flex items-center gap-2 px-4 py-2 rounded-xl hover:shadow-md transition-shadow"
-        >
-          <span className="text-xl">🪙</span>
-          <span className="text-sm font-bold text-amber-700">{coins}</span>
-          <span className="text-xs text-amber-500">金币</span>
-        </Link>
       </div>
       <p className="text-sm text-gray-400 mb-4">共 {pets.length} 种宠物 · 每位学生最多领养 {MAX_ADOPTION} 只</p>
 
@@ -133,14 +121,12 @@ export function PetShopPage() {
                   emoji={pet.emoji}
                   imageKey={pet.image_key}
                   rarity={pet.rarity}
-                  price={pet.price}
+                  price={0}
                   description={pet.description}
-                  coins={coins}
                   level={1}
                   onClick={() => openBuy(pet)}
                   onAction={() => openBuy(pet)}
-                  actionDisabled={pet.price > 0 && coins < pet.price}
-                  actionLabel={pet.price === 0 ? '🎁 免费领养' : coins >= pet.price ? `🪙 ${pet.price} 金币购买` : undefined}
+                  actionLabel="🎁 免费领养"
                 />
               ))}
             </div>
@@ -163,11 +149,10 @@ export function PetShopPage() {
                 />
               </div>
               <h3 className="text-lg font-semibold mt-2">
-                {selectedPet.price === 0 ? '领养' : '购买'} {selectedPet.name}
+                领养 {selectedPet.name}
               </h3>
               <p className="text-sm text-gray-400">
-                {RARITY_LABELS[selectedPet.rarity]}
-                {selectedPet.price > 0 ? ` · 🪙 ${selectedPet.price} 金币` : ' · 🎁 免费'}
+                {RARITY_LABELS[selectedPet.rarity]} · 🎁 免费
               </p>
             </div>
 
@@ -199,22 +184,13 @@ export function PetShopPage() {
               </div>
             </div>
 
-            {selectedPet.price > 0 && (
-              <div className="mt-3 p-2.5 bg-amber-50 rounded-lg text-xs text-amber-700">
-                当前金币余额：<span className="font-bold">{coins}</span>
-                {coins < selectedPet.price && (
-                  <span className="text-red-500 ml-1">（不足，请先<Link to="/wallet" className="underline">充值</Link>）</span>
-                )}
-              </div>
-            )}
-
             <div className="flex gap-3 mt-5">
               <button onClick={() => setShowModal(false)} className="flex-1 py-2.5 text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium">
                 取消
               </button>
-              <button onClick={handleBuy} disabled={adopting || (selectedPet.price > 0 && coins < selectedPet.price)}
+              <button onClick={handleBuy} disabled={adopting}
                 className="flex-1 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 disabled:opacity-50 transition-all text-sm font-medium shadow-md active:scale-95">
-                {adopting ? '处理中...' : selectedPet.price === 0 ? '确认领养' : '确认购买'}
+                {adopting ? '处理中...' : '确认领养'}
               </button>
             </div>
           </div>

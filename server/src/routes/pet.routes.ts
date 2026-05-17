@@ -35,7 +35,7 @@ router.get('/', (_req: AuthRequest, res: Response) => {
   res.json({ data: pets });
 });
 
-// 领养宠物（使用金币购买付费宠物，普通宠物免费）
+// 领养宠物（全部免费）
 router.post('/adopt', validate(adoptPetSchema), (req: AuthRequest, res: Response) => {
   const db = getDb();
   const { student_id, pet_id, nickname } = req.body;
@@ -68,23 +68,6 @@ router.post('/adopt', validate(adoptPetSchema), (req: AuthRequest, res: Response
   if (petCount.count >= MAX_ADOPTION) {
     res.status(400).json({ error: `已达到领养上限（${MAX_ADOPTION} 只），请先放生部分宠物` });
     return;
-  }
-
-  // 付费宠物使用金币购买
-  if (pet.price > 0) {
-    const user = db.get('SELECT coins FROM teachers WHERE id = ?', [req.teacherId]) as any;
-    if (!user || user.coins < pet.price) {
-      res.status(400).json({ error: `金币不足，${pet.name} 需要 ${pet.price} 金币，当前 ${user?.coins || 0} 金币` });
-      return;
-    }
-
-    // 扣除金币
-    db.run('UPDATE teachers SET coins = coins - ? WHERE id = ?', [pet.price, req.teacherId]);
-    const coinRecordId = crypto.randomUUID();
-    db.run(
-      'INSERT INTO coin_records (id, user_id, amount, reason) VALUES (?, ?, ?, ?)',
-      [coinRecordId, req.teacherId, -pet.price, `购买宠物「${pet.name}」赠予学生`]
-    );
   }
 
   const id = crypto.randomUUID();

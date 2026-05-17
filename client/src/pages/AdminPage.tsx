@@ -3,7 +3,6 @@ import useSWR, { mutate } from 'swr';
 import { useAuth } from '../context/AuthContext';
 import { fetchTeachers, fetchAdminStats, deleteTeacher } from '../api/admin';
 import { apiRequest } from '../api/client';
-import { generateRechargeCodes, fetchRechargeCodes } from '../api/recharge-codes';
 
 // 管理员视图
 function AdminPanel() {
@@ -13,30 +12,8 @@ function AdminPanel() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
 
-  // 充值码管理
-  const [showRechargeModal, setShowRechargeModal] = useState(false);
-  const [rechargeCoins, setRechargeCoins] = useState(50);
-  const [rechargeCount, setRechargeCount] = useState(1);
-  const [generating, setGenerating] = useState(false);
-  const [generatedCodes, setGeneratedCodes] = useState<{ codes: string[]; coins: number } | null>(null);
-  const { data: codesData, mutate: mutateCodes } = useSWR('recharge-codes-list', () => fetchRechargeCodes({ is_used: '0' }));
-
   const teachers = teachersData?.data || [];
   const stats = statsData || { teacherCount: 0, studentCount: 0, classCount: 0, petCount: 0 };
-  const unusedCodes = codesData?.data || [];
-
-  const handleGenerate = async () => {
-    setGenerating(true);
-    try {
-      const res = await generateRechargeCodes({ coins: rechargeCoins, count: rechargeCount });
-      setGeneratedCodes(res);
-      mutateCodes();
-    } catch (err: any) {
-      alert(err.message || '生成失败');
-    } finally {
-      setGenerating(false);
-    }
-  };
 
   const handleDelete = async (id: string) => {
     setDeleting(true);
@@ -72,102 +49,6 @@ function AdminPanel() {
           </div>
         ))}
       </div>
-
-      {/* 充值码管理 */}
-      <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="font-semibold text-gray-800">🎫 充值码管理</h3>
-            <p className="text-xs text-gray-400 mt-0.5">生成充值码，分发给需要购买金币的用户</p>
-          </div>
-          <button
-            onClick={() => { setShowRechargeModal(true); setGeneratedCodes(null); }}
-            className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 text-sm font-medium transition-colors"
-          >
-            + 生成充值码
-          </button>
-        </div>
-        {unusedCodes.length > 0 ? (
-          <div className="max-h-40 overflow-y-auto space-y-1">
-            {unusedCodes.slice(0, 10).map((c: any) => (
-              <div key={c.id} className="flex items-center justify-between py-1.5 px-3 bg-amber-50 rounded text-sm">
-                <span className="font-mono text-amber-800 tracking-wider">{c.code}</span>
-                <span className="text-amber-600 font-medium">{c.coins} 金币</span>
-              </div>
-            ))}
-            {unusedCodes.length > 10 && (
-              <p className="text-xs text-gray-400 text-center py-1">还有 {unusedCodes.length - 10} 个未使用的充值码...</p>
-            )}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-400 text-center py-4">暂无可用充值码</p>
-        )}
-      </div>
-
-      {/* 生成充值码弹窗 */}
-      {showRechargeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowRechargeModal(false)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold mb-4">生成充值码</h3>
-
-            {generatedCodes ? (
-              <div>
-                <div className="p-3 bg-green-50 rounded-lg mb-3 text-sm text-green-700">
-                  成功生成 {generatedCodes.codes.length} 个充值码，每个 {generatedCodes.coins} 金币
-                </div>
-                <div className="space-y-1.5 max-h-48 overflow-y-auto mb-4">
-                  {generatedCodes.codes.map((code, i) => (
-                    <div key={i} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                      <span className="font-mono text-sm text-gray-800 tracking-wider">{code}</span>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(code)}
-                        className="text-xs text-indigo-500 hover:text-indigo-700"
-                      >
-                        复制
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setShowRechargeModal(false)}
-                  className="w-full py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 text-sm"
-                >
-                  关闭
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">金币数量</label>
-                  <select value={rechargeCoins} onChange={e => setRechargeCoins(parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                    <option value={10}>10 金币（稀有宠物一只）</option>
-                    <option value={25}>25 金币（史诗宠物一只）</option>
-                    <option value={50}>50 金币（传说宠物一只）</option>
-                    <option value={66}>66 金币（凶兽宠物一只）</option>
-                    <option value={88}>88 金币（神话宠物一只）</option>
-                    <option value={100}>100 金币（超值装）</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">生成数量</label>
-                  <select value={rechargeCount} onChange={e => setRechargeCount(parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
-                    {[1, 5, 10, 20, 50].map(n => <option key={n} value={n}>{n} 个</option>)}
-                  </select>
-                </div>
-                <div className="flex gap-3 mt-5">
-                  <button onClick={() => setShowRechargeModal(false)} className="flex-1 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm">取消</button>
-                  <button onClick={handleGenerate} disabled={generating}
-                    className="flex-1 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 text-sm font-medium">
-                    {generating ? '生成中...' : `生成 ${rechargeCount} 个`}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">加载失败，请刷新重试</div>}
       {deleteError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">{deleteError}</div>}

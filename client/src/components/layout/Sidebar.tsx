@@ -7,7 +7,6 @@ const navItems = [
   { to: '/students', label: '学生管理', icon: '👨‍🎓' },
   { to: '/shop', label: '宠物商城', icon: '🛒' },
   { to: '/pets/feed', label: '宠物喂养', icon: '🍖' },
-  { to: '/wallet', label: '金币钱包', icon: '🪙' },
   { to: '/quiz', label: '竞赛闯关', icon: '⚔️' },
   { to: '/rankings', label: '排行榜', icon: '🏆' },
   { to: '/semester', label: '学期奖励', icon: '🏅' },
